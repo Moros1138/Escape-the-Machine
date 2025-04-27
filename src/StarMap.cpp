@@ -13,7 +13,7 @@ void StarMap::Create()
     }
 }
 
-void StarMap::Update(float fElapsedTime)
+void StarMap::Update()
 {
     for (size_t i = 0; i < mStars.size(); i++)
     {
@@ -34,7 +34,7 @@ void StarMap::Update(float fElapsedTime)
             c = olc::GREY;
         }
 
-        s.y += 18.0f * fElapsedTime * modifier;
+        s.y += 18.0f * (1.0f / 60.0f) * modifier;
 
         if (s.y >= game->ScreenHeight()) {
             s = { (float)(rand() % game->ScreenWidth()), 0.0f };

@@ -37,7 +37,7 @@ public:
 	Object();
 	Object(const olc::vf2d& position, const olc::Pixel& color = olc::WHITE, const olc::vf2d& size = { 16.0f, 16.0f });
 
-	virtual void Behaviour(float fElapsedTime) {}
+	virtual void Behaviour() {}
 
 	virtual void Draw();
 	virtual void Draw(const olc::vi2d& position, const olc::Pixel& color = olc::WHITE, const olc::vf2d& size = { 16.0f, 16.0f });
@@ -48,6 +48,14 @@ class Player : public Object
 private:
 	float mWaitForRestart = 0.0f;
 	float mSpeed;
+
+	enum MovementDirection
+	{
+		LEFT,
+		RIGHT,
+		UP,
+		DOWN
+	};
 public:
 	olc::vf2d initPosition;
 	olc::vf2d velocity;
@@ -55,9 +63,11 @@ public:
 	Player();
 	Player(const olc::vf2d& position, const olc::Pixel& color = olc::WHITE, const olc::vi2d& size = { 16, 16 });
 
-	void Behaviour(float fElapsedTime) override;
+	void Behaviour() override;
 
-	void Death(float fElapsedTime);
+	void Death();
+private:
+	bool MovementButtonHeld(MovementDirection md);
 };
 
 class SpriteObject : public Object
@@ -72,7 +82,7 @@ public:
 	SpriteObject(const std::string& name);
 	~SpriteObject();
 
-	void Behaviour(float fElapsedTime) override;
+	void Behaviour() override;
 
 
 	void Draw() override;	
@@ -91,7 +101,7 @@ public:
 	KeySwitch(const olc::vi2d& position, const olc::vi2d& sprSheetOffset, const char keyLockIndex);
 	~KeySwitch();
 	
-	void Behaviour(float fElapsedTime) override;
+	void Behaviour() override;
 private:
 	char mKeyLockIndex;
 };
@@ -100,14 +110,14 @@ class BrigdeSwitch : public SpriteObject
 {
 public:
 	BrigdeSwitch(const olc::vi2d& position);
-	void Behaviour(float fElapsedTime) override;
+	void Behaviour() override;
 };
 
 class ColorSwitch : public SpriteObject
 {
 public:
 	ColorSwitch(const olc::vi2d& position, const olc::vi2d& sprSheetOffset);
-	void Behaviour(float fElapsedTime) override;
+	void Behaviour() override;
 };
 
 class ColorFloor : public Object
@@ -118,7 +128,7 @@ public:
 	static int sMaxClearedFloorCount;
 public:
 	ColorFloor(const olc::vi2d& position, const olc::Pixel& color);
-	void Behaviour(float fElapsedTime) override;
+	void Behaviour() override;
 
 	static void Draw(const olc::vi2d& position, const olc::Pixel& color);
 	void Draw() override;

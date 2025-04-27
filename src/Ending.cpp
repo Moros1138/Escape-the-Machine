@@ -40,14 +40,14 @@ Ending::~Ending()
 	delete[] mClouds;
 }
 
-void Ending::Update(float fElapsedTime)
+void Ending::Update()
 {
 	if (game->mode != TIME_ATTACK)
 	{
 		game->player->position = { 10.0f, 13.0f };
 
-		game->player->size.x += 10 * fElapsedTime;
-		game->player->size.y += 10 * fElapsedTime;
+		game->player->size.x += 10 * game->globalDeltaTime;
+		game->player->size.y += 10 * game->globalDeltaTime;
 
 		if (game->player->size.x >= 16.0f &&
 			game->player->size.y >= 16.0f)
@@ -55,7 +55,7 @@ void Ending::Update(float fElapsedTime)
 			game->player->size = { 16.0f, 16.0f };
 
 			if (mTimer <= 1.0f)
-				mTimer += fElapsedTime;
+				mTimer += game->globalDeltaTime;
 		}
 
 		if (mTimer > 1.0f)
@@ -137,7 +137,7 @@ void Ending::Update(float fElapsedTime)
 	}
 	else
 	{
-		game->starMap->Update(fElapsedTime);
+		game->starMap->Update();
 
 		bool curseWordFound = game->timeAttack->FindCurseWord(mTimeScoreName);
 

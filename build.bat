@@ -1,5 +1,5 @@
 REM make sure the emscripten environment is set properly
-call "D:\Projects\Third party Libraries\emsdk-2.0.23\emsdk_env.bat"
+call "D:\SoftwareDev\emsdk\emsdk_env.bat"
 
 REM ensure folder exists for binary
 md build\bin\Release\wasm

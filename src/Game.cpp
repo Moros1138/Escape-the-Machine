@@ -2,7 +2,7 @@
 
 Game::Game()
 {
-    sAppName = "Escape the Machine: Death Machine Returns";
+    sAppName = "Escape the Machine";
 }
 
 Game::~Game()
@@ -26,6 +26,12 @@ bool Game::OnUserCreate()
 {
     ImageAssets::get().LoadSprites();
 
+    timer = 0.0f;
+    fixedTimeSimulated = 0.0f;
+    globalDeltaTime = 0.0f;
+
+    olc::GamePad::init();
+
     playerControl = true;
 
     state = MAIN_MENU;
@@ -46,14 +52,19 @@ bool Game::OnUserCreate()
 
 bool Game::OnUserUpdate(float fElapsedTime)
 {
+    globalDeltaTime = fElapsedTime;
+
+    if (gamepad == nullptr || !gamepad->stillConnected)
+        gamepad = olc::GamePad::selectWithAnyButton();
+
     if (state != ENDING)
-        starMap->Update(fElapsedTime);
+        starMap->Update();
 
     switch (state)
     {    
-    case MAIN_MENU: mainMenu->Update(fElapsedTime);  break;
-    case GAME:      Update(fElapsedTime);             break;    
-    case ENDING:    ending->Update(fElapsedTime);    break;
+    case MAIN_MENU: mainMenu->Update();  break;
+    case GAME:      Update();            break;
+    case ENDING:    ending->Update();    break;
     }    
 
     if (state != ENDING)
@@ -63,55 +74,65 @@ bool Game::OnUserUpdate(float fElapsedTime)
     return true;
 }
 
-void Game::Update(float fElapsedTime)
+bool Game::OnUserFixedUpdate()
 {
-    if (GetKey(olc::ESCAPE).bPressed)
+    bool OutOfBoundary =
+        player->position.x < 0.0f || player->position.x > ScreenWidth() / 16 ||
+        player->position.y < 0.0f || player->position.y > ScreenHeight() / 16;
+
+    if (OutOfBoundary || mainMenu->gameStart)
+    {
+        levels->Load(vObjects, mainMenu->strMode, mainMenu->gameStart);
+
+        if (mainMenu->gameStart)
+            mainMenu->gameStart = false;
+    }
+
+    player->Behaviour();
+
+    for (auto& obj : vObjects)
+    {
+        if (player->position.x + 0.5f > obj->position.x && player->position.y + 0.5f > obj->position.y &&
+            player->position.x + 0.5f < obj->position.x + 1.0f && player->position.y + 0.5f < obj->position.y + 1.0f)
+            obj->Behaviour();
+    }
+    if (levels->GetTile(player->position.x + 0.5f, player->position.y + 0.5f) == 'C')
+    {
+        if (mode == TIME_ATTACK)
+            timeAttack->timeRunning = false;
+        playerControl = false;
+        if (player->size.x <= 0.0f &&
+            player->size.y <= 0.0f)
+        {
+            vObjects.clear();
+            state = ENDING;
+        }
+    }
+
+    return fixedTimeSimulated < timer;
+}
+
+void Game::Update()
+{
+    if (GetKey(olc::ESCAPE).bPressed || GetGamePadButton(olc::GPButtons::START).bPressed)
         pauseMenu->bIsOn = true;
 
     if (pauseMenu->bIsOn)
-        pauseMenu->Update(fElapsedTime, levels, timeAttack, player->initPosition);
+        pauseMenu->Update(levels, timeAttack, player->initPosition);
     else
     {
-        bool OutOfBoundary = 
-            player->position.x < 0.0f || player->position.x > ScreenWidth() / 16 ||
-            player->position.y < 0.0f || player->position.y > ScreenHeight() / 16;
-
         if (mode == TIME_ATTACK && timeAttack->timeRunning)
         {
             timeAttack->Update();
         }
 
-        if (OutOfBoundary || mainMenu->gameStart)
-        {
-            levels->Load(vObjects, mainMenu->strMode, mainMenu->gameStart);
-
-            if (mainMenu->gameStart)
-                mainMenu->gameStart = false;
-        }
-
-        player->Behaviour(fElapsedTime);
-
-        for (auto& obj : vObjects)
-        {
-            if (player->position.x + 0.5f > obj->position.x && player->position.y + 0.5f > obj->position.y &&
-                player->position.x + 0.5f < obj->position.x + 1.0f && player->position.y + 0.5f < obj->position.y + 1.0f)
-                obj->Behaviour(fElapsedTime);
-        }
-        if (levels->GetTile(player->position.x + 0.5f, player->position.y + 0.5f) == 'C')
-        {
-            if (mode == TIME_ATTACK)
-                timeAttack->timeRunning = false;
-            playerControl = false;
-            if (player->size.x <= 0.0f &&
-                player->size.y <= 0.0f)                    
-            {
-                vObjects.clear();
-                state = ENDING;
-            }
-        }
-
         if (levels->bHasFloorSwap)
-            levels->Update(fElapsedTime);
+            levels->Update();
+
+        while (OnUserFixedUpdate())
+        {
+            fixedTimeSimulated += 1.0f / 60.0f;
+        }
     } 
 
     Clear(olc::Pixel(0, 0, 30));
@@ -171,4 +192,46 @@ void Game::Restart()
         ColorFloor::sClearedFloorCount = ColorFloor::sStartingClearedFloorCount;
     player->color = olc::BLUE;
     playerControl = true;
+}
+
+olc::HWButton Game::GetGamePadButton(olc::GPButtons b)
+{
+    if (gamepad != nullptr && gamepad->stillConnected)
+            return gamepad->getButton(b);
+    return olc::HWButton();
+}
+
+float Game::GetGamepadAxis(olc::GPAxes a)
+{
+    if (gamepad != nullptr && gamepad->stillConnected)
+    {
+        if (std::abs(gamepad->getAxis(a)) > 0.3f)
+            return gamepad->getAxis(a);
+    }
+    return 0.0f;
+}
+
+bool Game::PressUp()
+{
+    return GetKey(olc::W).bPressed || GetKey(olc::UP).bPressed || GetGamePadButton(olc::GPButtons::DPAD_U).bPressed;
+}
+
+bool Game::PressDown()
+{
+    return GetKey(olc::S).bPressed || GetKey(olc::DOWN).bPressed || GetGamePadButton(olc::GPButtons::DPAD_D).bPressed;
+}
+
+bool Game::PressLeft()
+{
+    return GetKey(olc::A).bPressed || GetKey(olc::LEFT).bPressed || GetGamePadButton(olc::GPButtons::DPAD_L).bPressed;
+}
+
+bool Game::PressRight()
+{
+    return GetKey(olc::D).bPressed || GetKey(olc::RIGHT).bPressed || GetGamePadButton(olc::GPButtons::DPAD_R).bPressed;
+}
+
+bool Game::PressConfirmButton()
+{
+    return game->GetKey(olc::ENTER).bPressed || game->GetGamePadButton(olc::GPButtons::FACE_D).bPressed;
 }

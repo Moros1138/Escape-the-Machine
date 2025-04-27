@@ -10,7 +10,7 @@ public:
     StarMap();
 
     void Create();
-    void Update(float fElapsedTime);
+    void Update();
     void Draw();    
 
 private:    

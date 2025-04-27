@@ -3,6 +3,7 @@
 
 #include "Scoreboard.h"
 #include "olcPixelGameEngine.h"
+#include "olcPGEX_Gamepad.h"
 
 #include "Ending.h"
 #include "Level.h"
@@ -44,6 +45,8 @@ public:
 	GameState state;
 	GameContent content;
 	GameMode mode;
+
+	olc::GamePad* gamepad;
 public:
 	MainMenu* mainMenu;
 	PauseMenu* pauseMenu;
@@ -55,18 +58,32 @@ public:
 	Player* player;
 	std::vector<Object*> vObjects;
 	bool playerControl;
+
+	double fixedTimeSimulated;
+	float timer;
+	float globalDeltaTime;
 public:
 	Game();
 	~Game();
 
 	bool OnUserCreate() override;
 	bool OnUserUpdate(float fElapsedTime) override;
+	bool OnUserFixedUpdate();
 
-	void Update(float fElapsedTime);
+	void Update();
 
 	void DrawStringDecalXAligned(const std::string& sText, const olc::vi2d& offset, const olc::Pixel& col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f });
 
 	void Restart();
+
+	olc::HWButton GetGamePadButton(olc::GPButtons b);
+	float GetGamepadAxis(olc::GPAxes a);
+	
+	bool PressUp();
+	bool PressDown();
+	bool PressLeft();
+	bool PressRight();
+	bool PressConfirmButton();
 };
 
 inline Game* game = new Game();

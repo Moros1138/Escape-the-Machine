@@ -5,7 +5,6 @@
 MainMenu::MainMenu()
 {
     titleCard = new TitleCard("Title");
-    subTitleCard = new TitleCard("Subtitle");
     chooseList = CHOOSE_CONTENT;
     isRefresh = false;
 }
@@ -13,38 +12,36 @@ MainMenu::MainMenu()
 MainMenu::~MainMenu()
 {
     delete titleCard;
-    delete subTitleCard;
 }
 
-void MainMenu::Update(float fElapsedTime)
+void MainMenu::Update()
 {
-    fTimer += fElapsedTime;
+    fTimer += game->globalDeltaTime;
 
     if (fTimer > 2.0f)
     {
-        titleCard->alpha += 200 * fElapsedTime;
+        titleCard->alpha += 200 * game->globalDeltaTime;
 
         if (titleCard->alpha >= 255.0f)
         {
             titleCard->alpha = 255.0f;
         }
 
-        if (titleCard->alpha >= 180.0f)
-        {
-            subTitleCard->alpha += 300 * fElapsedTime;
-            if (subTitleCard->alpha >= 255.0f)
-                subTitleCard->alpha = 255.0f;
-        }
+        //if (titleCard->alpha >= 180.0f)
+        //{
+        //    subTitleCard->alpha += 300 * game->globalDeltaTime;
+        //    if (subTitleCard->alpha >= 255.0f)
+        //        subTitleCard->alpha = 255.0f;
+        //}
 
-        if (titleCard->alpha == 255.0f && subTitleCard->alpha == 255.0f
-            && fTimer > 5.0f)
+        if (titleCard->alpha == 255.0f && fTimer > 4.0f)
         {
             for (int i = 0; i < 4; i++)
                 mHoverColor[i] = olc::DARK_GREY;
 
             mHoverColor[mMenuHoverLighted] = olc::WHITE;
 
-            if (game->GetKey(olc::W).bPressed || game->GetKey(olc::UP).bPressed)
+            if (game->PressUp())
             {
                 if (mMenuHoverLighted == 0)
                 {
@@ -53,7 +50,7 @@ void MainMenu::Update(float fElapsedTime)
                 else
                     mMenuHoverLighted--;
             }
-            else if (game->GetKey(olc::S).bPressed || game->GetKey(olc::DOWN).bPressed)
+            else if (game->PressDown())
             {                
                 if (mMenuHoverLighted == 3)
                     mMenuHoverLighted = 0;
@@ -63,14 +60,14 @@ void MainMenu::Update(float fElapsedTime)
 
             if (chooseList == SHOW_LEADERBOARD)
             {                
-                if ((game->GetKey(olc::D).bPressed || game->GetKey(olc::RIGHT).bPressed)
+                if ((game->PressRight())
                     && game->timeAttack->scoreList == TimeAttack::ScoreList::NORMAL)
                 {
                     // NORMAL LIST
                     game->timeAttack->scoreList = game->timeAttack->ScoreList::ENCORE;
                 }
 
-                if ((game->GetKey(olc::A).bPressed || game->GetKey(olc::LEFT).bPressed)
+                if ((game->PressLeft())
                     && game->timeAttack->scoreList == TimeAttack::ScoreList::ENCORE)
                 {
                     // ENCORE LIST
@@ -78,7 +75,7 @@ void MainMenu::Update(float fElapsedTime)
                 }
             }
 
-            if (game->GetKey(olc::ENTER).bPressed)
+            if (game->PressConfirmButton())
             {
                 if (chooseList == SHOW_LEADERBOARD || chooseList == CREDITS)
                 {
@@ -102,7 +99,7 @@ void MainMenu::Update(float fElapsedTime)
                             game->state = GameState::GAME;
                             fTimer = 0.0f;
                             titleCard->alpha = 0.0f;
-                            subTitleCard->alpha = 0.0f;
+                            
                         }                        
                     }                    
                 }
@@ -126,12 +123,11 @@ void MainMenu::Update(float fElapsedTime)
 
     if (chooseList != SHOW_LEADERBOARD && chooseList != CREDITS)
     {
-        titleCard->Draw(olc::vi2d(130, 80), olc::WHITE);
-        subTitleCard->Draw(olc::vi2d(140, 180), olc::DARK_CYAN);
+        titleCard->Draw(olc::vi2d(130, 90), olc::WHITE);
+      
     }    
 
-    if (titleCard->alpha == 255.0f && subTitleCard->alpha == 255.0f
-        && fTimer > 5.0f)
+    if (titleCard->alpha == 255.0f && fTimer > 4.0f)
     {
         if (chooseList == CHOOSE_CONTENT)
         {
@@ -164,7 +160,7 @@ void MainMenu::Update(float fElapsedTime)
             game->DrawStringDecalXAligned("olcPixelGameEngine Created by", olc::vi2d(-8, 210), olc::YELLOW, { 2.0f, 2.0f });
             game->DrawStringDecalXAligned("javidx9",                       olc::vi2d(0, 230), olc::WHITE, { 2.0f, 2.0f });
 
-            game->DrawStringDecalXAligned("Press enter to go back",        olc::vi2d(0, 286));
+            game->DrawStringDecalXAligned("Press enter or 'A' button on controller to go back",        olc::vi2d(0, 286));
         }
 
     }
@@ -181,7 +177,7 @@ PauseMenu::PauseMenu()
     bIsOn = false;
 }
 
-void PauseMenu::Update(float fElapsedTime, Level* level, TimeAttack* ta, olc::vf2d& playerInitPosition)
+void PauseMenu::Update(Level* level, TimeAttack* ta, olc::vf2d& playerInitPosition)
 {
     if (!m_bPrompt)
     {
@@ -190,14 +186,14 @@ void PauseMenu::Update(float fElapsedTime, Level* level, TimeAttack* ta, olc::vf
 
         mHoverColor[mPauseHoverLighted] = olc::WHITE;    
     
-        if (game->GetKey(olc::W).bPressed || game->GetKey(olc::UP).bPressed)
+        if (game->PressUp())
         {
             if (mPauseHoverLighted == 0)
                 mPauseHoverLighted = 2;
             else
                 mPauseHoverLighted--;
         }
-        else if (game->GetKey(olc::S).bPressed || game->GetKey(olc::DOWN).bPressed)
+        else if (game->PressDown())
         {
             if (mPauseHoverLighted == 2)
                 mPauseHoverLighted = 0;
@@ -212,18 +208,18 @@ void PauseMenu::Update(float fElapsedTime, Level* level, TimeAttack* ta, olc::vf
 
         mPromptHoverColor[mPauseHoverLighted] = olc::WHITE;
 
-        if (game->GetKey(olc::A).bPressed || game->GetKey(olc::LEFT).bPressed)
+        if (game->PressLeft())
         {
             mPauseHoverLighted = 0;
         }
-        else if (game->GetKey(olc::D).bPressed || game->GetKey(olc::RIGHT).bPressed)
+        else if (game->PressRight())
         {
             mPauseHoverLighted = 1;
         }
     }
     
 
-    if (game->GetKey(olc::ENTER).bPressed)
+    if (game->PressConfirmButton())
     {
         if (!m_bPrompt)
         {

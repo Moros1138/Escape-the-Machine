@@ -6,6 +6,7 @@
 #include <array>
 
 #include "olcPixelGameEngine.h"
+#include "olcPGEX_Gamepad.h"
 #include "TitleCard.h"
 #include "Level.h"
 #include "TimeAttack.h"
@@ -14,7 +15,6 @@ class MainMenu
 {
 public:
 	TitleCard* titleCard;
-	TitleCard* subTitleCard;
 
 	bool gameStart = false;
 	float fTimer = 0.0f;
@@ -30,7 +30,7 @@ public:
 	MainMenu();
 	~MainMenu();
 
-	void Update(float fElapsedTime);
+	void Update();
 	void Reset();	
 };
 
@@ -46,7 +46,7 @@ public:
 	bool bIsOn;
 public:
 	PauseMenu();
-	void Update(float fElapsedTime, Level* level, TimeAttack* ta, olc::vf2d& playerInitPosition);
+	void Update(Level* level, TimeAttack* ta, olc::vf2d& playerInitPosition);
 	void Print();
 };
 #endif

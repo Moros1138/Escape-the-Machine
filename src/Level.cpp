@@ -8,10 +8,10 @@ FloorSwapping::FloorSwapping()
 {	
 }
 
-void FloorSwapping::Update(float fElapsedTime)
+void FloorSwapping::Update()
 {
 	if (game->playerControl)
-		mTime += fElapsedTime;
+		mTime += game->globalDeltaTime;
 
 	if (mTime >= 1.0f)
 	{
@@ -58,9 +58,9 @@ Level::Level()
 
 	tileSize = { 16, 16 };
 
-	nID = 1;
+	nID = 6;
 	colorFloorLockLevel = false;
-	branched = false;	
+	branched = false;
 	strID = (nID != 16) ? std::to_string(nID) : "final";
 
 	bHasFloorSwap = false;
@@ -80,10 +80,10 @@ Level::~Level()
 	delete mSwap1;
 }
 
-void Level::Update(float fElapsedTime)
+void Level::Update()
 {
-	mSwap1->Update(fElapsedTime);
-	mSwap2->Update(fElapsedTime);	
+	mSwap1->Update();
+	mSwap2->Update();	
 }
 
 void Level::ReadFile(const std::string& filepath)
@@ -171,17 +171,17 @@ void Level::Load(std::vector<Object*>& obj, const std::string& mode, bool gameSt
 			char tileID = GetTile(olc::vi2d(x, y));
 			switch (tileID)
 			{
-			case 'O': obj.push_back(new KeySwitch(olc::vi2d(x, y), olc::vi2d(0, 0), '|'));	break;
-			case 'o': obj.push_back(new KeySwitch(olc::vi2d(x, y), olc::vi2d(0, 1), 'l'));	break;					
-			case 'r': obj.push_back(new ColorSwitch(olc::vi2d(x, y), olc::vi2d(0, 0)));		break;
-			case 'g': obj.push_back(new ColorSwitch(olc::vi2d(x, y), olc::vi2d(1, 0)));		break;
-			case 'b': obj.push_back(new ColorSwitch(olc::vi2d(x, y), olc::vi2d(2, 0)));		break;
-			case 'R': obj.push_back(new ColorFloor(olc::vi2d(x, y), olc::RED));				break;
-			case 'G': obj.push_back(new ColorFloor(olc::vi2d(x, y), olc::GREEN));				break;
-			case 'B': obj.push_back(new ColorFloor(olc::vi2d(x, y), olc::BLUE));				break;
-			case '_': obj.push_back(new BrigdeSwitch(olc::vi2d(x, y)));						break;
-			case 'q': mSwap1->AddPosition(olc::vi2d(x, y));							                        break;
-			case 'Q': mSwap2->AddPosition(olc::vi2d(x, y));							                        break;
+			case 'O': obj.push_back(new KeySwitch(olc::vi2d(x, y), olc::vi2d(0, 0), '|'));  break;
+			case 'o': obj.push_back(new KeySwitch(olc::vi2d(x, y), olc::vi2d(0, 1), 'l'));  break;
+			case 'r': obj.push_back(new ColorSwitch(olc::vi2d(x, y), olc::vi2d(0, 0)));     break;
+			case 'g': obj.push_back(new ColorSwitch(olc::vi2d(x, y), olc::vi2d(1, 0)));     break;
+			case 'b': obj.push_back(new ColorSwitch(olc::vi2d(x, y), olc::vi2d(2, 0)));     break;
+			case 'R': obj.push_back(new ColorFloor(olc::vi2d(x, y), olc::RED));             break;
+			case 'G': obj.push_back(new ColorFloor(olc::vi2d(x, y), olc::GREEN));           break;
+			case 'B': obj.push_back(new ColorFloor(olc::vi2d(x, y), olc::BLUE));            break;
+			case '_': obj.push_back(new BrigdeSwitch(olc::vi2d(x, y)));                     break;
+			case 'q': mSwap1->AddPosition(olc::vi2d(x, y));                                 break;
+			case 'Q': mSwap2->AddPosition(olc::vi2d(x, y));                                 break;
 			}
 		}
 
@@ -409,9 +409,6 @@ void Level::Draw()
 			case '|': case 'L': mKeyLock->Draw(olc::vi2d(x, y) * tileSize); break;
 			case 'l': mKeyLockBlue->sprSheetOffset = { 1 , 0 }; mKeyLockBlue->Draw(olc::vi2d(x, y) * tileSize); break;
 			case 'C': game->FillRectDecal(olc::vi2d(x, y) * tileSize, tileSize, olc::CYAN); break;
-			case '1': ColorFloor::Draw(olc::vi2d(x, y), olc::RED); break;
-			case '2': ColorFloor::Draw(olc::vi2d(x, y), olc::GREEN); break;
-			case '3': ColorFloor::Draw(olc::vi2d(x, y), olc::BLUE); break;
 			}
 		}
 
@@ -419,14 +416,24 @@ void Level::Draw()
 	{
 		if (game->content == NORMAL)
 		{
-			game->DrawStringDecal(olc::vf2d(4.5f, 5.25f) * 16, "W,A,S,D / Arrow keys - Move", olc::DARK_CYAN, olc::vf2d(1.5f, 1.5f));
-			game->DrawStringDecal(olc::vf2d(4.5f, 6.25f) * 16, "Left Shift - Sprint", olc::DARK_CYAN, olc::vf2d(1.5f, 1.5f));
+			game->DrawStringDecal(olc::vf2d(3.5f, 5.25f) * 16, "W,A,S,D/Arrow keys/Left Stick/D-pad - Move", olc::DARK_CYAN, olc::vf2d(1.0f, 1.0f));
+			game->DrawStringDecal(olc::vf2d(3.5f, 6.25f) * 16, "Left Shift/R2/RT - Sprint", olc::DARK_CYAN, olc::vf2d(1.0f, 1.0f));
+			game->DrawStringDecal(olc::vf2d(3.5f, 7.25f) * 16, "ESC/Start - Pause the game", olc::DARK_CYAN, olc::vf2d(1.0f, 1.0f));
 		}
 		else
 		{
-			game->DrawStringDecal(olc::vf2d(4.5f, 15.25f) * 16, "W,A,S,D / Arrow keys - Move", olc::DARK_CYAN, olc::vf2d(1.5f, 1.5f));
-			game->DrawStringDecal(olc::vf2d(4.5f, 16.25f) * 16, "Left Shift - Sprint", olc::DARK_CYAN, olc::vf2d(1.5f, 1.5f));
+			game->DrawStringDecal(olc::vf2d(3.5f, 15.25f) * 16, "W,A,S,D/Arrow keys/Left Stick/D-pad - Move", olc::DARK_CYAN, olc::vf2d(1.0f, 1.0f));
+			game->DrawStringDecal(olc::vf2d(3.5f, 16.25f) * 16, "Left Shift/R2/RT - Sprint", olc::DARK_CYAN, olc::vf2d(1.0f, 1.0f));
+			game->DrawStringDecal(olc::vf2d(3.5f, 17.25f) * 16, "ESC/Start - Pause the game", olc::DARK_CYAN, olc::vf2d(1.0f, 1.0f));
 		}
+	}
+
+	if (game->state == GAME)
+	{
+		if (nID != 16)
+			game->DrawStringDecal(olc::vi2d(0, 19 * 16), "Level:" + strID + "/15", olc::WHITE, olc::vf2d(2.0f, 2.0f));
+		else
+			game->DrawStringDecal(olc::vi2d(0, 19 * 16), "The End", olc::WHITE, olc::vf2d(2.0f, 2.0f));
 	}
 
 	if (colorFloorLockLevel)

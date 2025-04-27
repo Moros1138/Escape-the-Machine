@@ -16,7 +16,7 @@ public:
 	FloorSwapping();
 
 	void Init(bool noFloor);
-	void Update(float fElapsedTime);
+	void Update();
 
 	void AddPosition(const olc::vi2d& pos);
 	void ClearPositions();
@@ -44,7 +44,7 @@ public:
 	Level();
 	~Level();
 
-	void Update(float fElapsedTime);
+	void Update();
 
 	char GetTile(int x, int y);
 	char GetTile(const olc::vi2d& id);

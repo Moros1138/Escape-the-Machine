@@ -88,7 +88,7 @@ SpriteObject::~SpriteObject()
 	delete mDecal;
 }
 
-void SpriteObject::Behaviour(float fElapsedTime)
+void SpriteObject::Behaviour()
 {
 }
 
@@ -127,33 +127,41 @@ Player::Player(const olc::vf2d& position, const olc::Pixel& color, const olc::vi
 	initPosition = position;
 }
 
-void Player::Behaviour(float fElapsedTime)
+void Player::Behaviour()
 {
 	velocity = {0.0f, 0.0f};	
 
 	if (!game->playerControl)
 	{
-		Death(fElapsedTime);
+		Death();
 	}
 	else 
 	{
-		if (game->GetKey(olc::A).bHeld || game->GetKey(olc::LEFT).bHeld)	velocity.x = -mSpeed;
-		if (game->GetKey(olc::D).bHeld || game->GetKey(olc::RIGHT).bHeld)	velocity.x =  mSpeed;
-		if (game->GetKey(olc::W).bHeld || game->GetKey(olc::UP).bHeld)	velocity.y = -mSpeed;
-		if (game->GetKey(olc::S).bHeld || game->GetKey(olc::DOWN).bHeld)	velocity.y =  mSpeed;
-
-		if (game->GetKey(olc::SHIFT).bHeld)
+		if (game->GetKey(olc::SHIFT).bHeld || game->GetGamePadButton(olc::GPButtons::R2).bHeld)
 			mSpeed = 15.0f;
 		else
-			mSpeed = 7.5f;		
+			mSpeed = 7.5f;
+
+		if (MovementButtonHeld(LEFT) || MovementButtonHeld(RIGHT) || MovementButtonHeld(UP) || MovementButtonHeld(DOWN))
+		{
+			if (MovementButtonHeld(LEFT))	velocity.x = -1.0f;
+			if (MovementButtonHeld(RIGHT))	velocity.x =  1.0f;
+			if (MovementButtonHeld(UP))		velocity.y = -1.0f;
+			if (MovementButtonHeld(DOWN))	velocity.y =  1.0f;
+		}
+		else
+		{
+			velocity.x = mSpeed * game->GetGamepadAxis(olc::GPAxes::LX);
+			velocity.y = mSpeed * game->GetGamepadAxis(olc::GPAxes::LY);
+		}
 
 		if (game->levels->GetTile(position + 0.5f) == '.' || game->levels->GetTile(position + 0.5f) == '-')
 		{			
-			game->playerControl = false;			
+			game->playerControl = false;
 		}
 	}
 
-	olc::vf2d newPlayerPos = position + velocity * fElapsedTime;
+	olc::vf2d newPlayerPos = position + (velocity.norm() * mSpeed) * (1.0f / 60.0f);
 
 	if (velocity.x < 0.0f)
 	{
@@ -211,7 +219,7 @@ void Player::Behaviour(float fElapsedTime)
 	position = newPlayerPos;	
 }
 
-void Player::Death(float fElapsedTime)
+void Player::Death()
 {
 	for (int x = 0; x < game->levels->width; x++)
 		for (int y = 0; y < game->levels->height; y++)
@@ -230,12 +238,12 @@ void Player::Death(float fElapsedTime)
 	if (size.x > 0.0f &&
 		size.y > 0.0f)
 	{
-		size.x -= 10 * fElapsedTime;
-		size.y -= 10 * fElapsedTime;
+		size.x -= 10 * 0.016f;
+		size.y -= 10 * 0.016f;
 	}
 	else
 	{
-		mWaitForRestart += fElapsedTime;
+		mWaitForRestart += game->globalDeltaTime;
 		
 		if (mWaitForRestart > 2.0f)
 		{
@@ -245,6 +253,18 @@ void Player::Death(float fElapsedTime)
 			game->Restart();
 		}	
 	}
+}
+
+bool Player::MovementButtonHeld(MovementDirection md)
+{
+	switch (md)
+	{
+	case LEFT:  return (game->GetKey(olc::A).bHeld || game->GetKey(olc::LEFT).bHeld || game->GetGamePadButton(olc::GPButtons::DPAD_L).bHeld);
+	case RIGHT: return (game->GetKey(olc::D).bHeld || game->GetKey(olc::RIGHT).bHeld || game->GetGamePadButton(olc::GPButtons::DPAD_R).bHeld);
+	case UP:    return (game->GetKey(olc::W).bHeld || game->GetKey(olc::UP).bHeld || game->GetGamePadButton(olc::GPButtons::DPAD_U).bHeld);
+	case DOWN:  return (game->GetKey(olc::S).bHeld || game->GetKey(olc::DOWN).bHeld || game->GetGamePadButton(olc::GPButtons::DPAD_D).bHeld);
+	}
+	return false;
 }
 
 KeySwitch::KeySwitch(const olc::vi2d& position, const olc::vi2d& sprSheetOffset, const char keyLockIndex)
@@ -259,7 +279,7 @@ KeySwitch::~KeySwitch()
 {
 }
 
-void KeySwitch::Behaviour(float fElapsedTime)
+void KeySwitch::Behaviour()
 {
 	for (int x = 0; x < game->levels->width; x++)
 		for (int y = 0; y < game->levels->height; y++)
@@ -279,7 +299,7 @@ ColorSwitch::ColorSwitch(const olc::vi2d& position, const olc::vi2d& sprSheetOff
 	this->sprSheetOffset = sprSheetOffset;
 }
 
-void ColorSwitch::Behaviour(float fElapsedTime)
+void ColorSwitch::Behaviour()
 {
 	if (game->levels->GetTile(position) == 'r')
 		game->player->color = olc::RED;
@@ -300,7 +320,7 @@ ColorFloor::ColorFloor(const olc::vi2d& position, const olc::Pixel& color)
 	this->color = color;
 }
 
-void ColorFloor::Behaviour(float fElapsedTime)
+void ColorFloor::Behaviour()
 {
 	if (game->levels->colorFloorLockLevel && game->content == ENCORE)
 	{
@@ -336,20 +356,14 @@ void ColorFloor::Behaviour(float fElapsedTime)
 
 void ColorFloor::Draw()
 {
-	game->FillRectDecal(position * size, size, color);
-	game->FillRectDecal(position * size, olc::vi2d(16, 1), mEdgeColor);
-	game->FillRectDecal(position * size, olc::vi2d(1, 16), mEdgeColor);
-	game->FillRectDecal(olc::vi2d(position.x * size.x, position.y * size.y + 15), olc::vi2d(16, 1), mEdgeColor);
-	game->FillRectDecal(olc::vi2d(position.x * size.x + 15, position.y * size.y), olc::vi2d(1, 16), mEdgeColor);
+	game->FillRectDecal(position * 16, olc::vi2d(16, 16), mEdgeColor);
+	game->FillRectDecal(position * 16 + 1, olc::vi2d(14, 14), color);
 }
 
 void ColorFloor::Draw(const olc::vi2d& position, const olc::Pixel& color)
 {
-	game->FillRectDecal(position * 16, olc::vi2d(16, 16), color);
-	game->FillRectDecal(position * 16, olc::vi2d(16, 1), olc::WHITE);
-	game->FillRectDecal(position * 16, olc::vi2d(1, 16), olc::WHITE);
-	game->FillRectDecal(olc::vi2d(position.x * 16, position.y * 16 + 15), olc::vi2d(16, 1), olc::WHITE);
-	game->FillRectDecal(olc::vi2d(position.x * 16 + 15, position.y * 16), olc::vi2d(1, 16), olc::WHITE);
+	game->FillRectDecal(position * 16, olc::vi2d(16, 16), olc::WHITE);
+	game->FillRectDecal(position * 16 + 1, olc::vi2d(14, 14), color);
 }
 
 BrigdeSwitch::BrigdeSwitch(const olc::vi2d& position)
@@ -359,7 +373,7 @@ BrigdeSwitch::BrigdeSwitch(const olc::vi2d& position)
 	sprSheetOffset = { 0, 2 };
 }
 
-void BrigdeSwitch::Behaviour(float fElapsedTime)
+void BrigdeSwitch::Behaviour()
 {
 	for (int x = 0; x < game->levels->width; x++)
 		for (int y = 0; y < game->levels->height; y++)

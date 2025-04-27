@@ -25,7 +25,7 @@ public:
 	Ending();
 	~Ending();
 
-	void Update(float fElapsedTime);
+	void Update();
 private:
 	void EncoreDialog();
 };

@@ -3,10 +3,12 @@
 
 #include <cstdint>
 #include <iostream>
+#include <vector>
+#include <map>
 
-#include "mwaWebApiClient.h"	// WebAPI provided by Moros1138
+//#include "mwaWebApiClient.h"	// WebAPI provided by Moros1138
 
-class Scoreboard : public mwa::WebApiClient
+class Scoreboard //: public mwa::WebApiClient
 {
 public:
     Scoreboard();
@@ -22,7 +24,7 @@ public:
 private:
     std::string sBasePath;
 
-    void parseScores(std::vector<std::tuple<std::string, uint32_t, uint32_t, uint32_t>>& scores, nlohmann::json& j);
+    //void parseScores(std::vector<std::tuple<std::string, uint32_t, uint32_t, uint32_t>>& scores, nlohmann::json& j);
 
 public:
     std::vector<std::tuple<std::string, uint32_t, uint32_t, uint32_t>> vNormalScores;
