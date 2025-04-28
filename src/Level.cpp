@@ -58,7 +58,7 @@ Level::Level()
 
 	tileSize = { 16, 16 };
 
-	nID = 6;
+	nID = 16;
 	colorFloorLockLevel = false;
 	branched = false;
 	strID = (nID != 16) ? std::to_string(nID) : "final";
@@ -83,13 +83,13 @@ Level::~Level()
 void Level::Update()
 {
 	mSwap1->Update();
-	mSwap2->Update();	
+	mSwap2->Update();
 }
 
 void Level::ReadFile(const std::string& filepath)
 {
 	std::ifstream stream(filepath);
-	std::string line;	
+	std::string line;
 	std::stringstream ss;
 
 	int lineCount = 0;

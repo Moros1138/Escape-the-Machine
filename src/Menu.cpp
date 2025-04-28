@@ -27,13 +27,6 @@ void MainMenu::Update()
             titleCard->alpha = 255.0f;
         }
 
-        //if (titleCard->alpha >= 180.0f)
-        //{
-        //    subTitleCard->alpha += 300 * game->globalDeltaTime;
-        //    if (subTitleCard->alpha >= 255.0f)
-        //        subTitleCard->alpha = 255.0f;
-        //}
-
         if (titleCard->alpha == 255.0f && fTimer > 4.0f)
         {
             for (int i = 0; i < 4; i++)

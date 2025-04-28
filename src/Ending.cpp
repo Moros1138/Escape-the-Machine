@@ -62,7 +62,7 @@ void Ending::Update()
 		{
 			if (game->content == NORMAL)
 			{
-				if (game->GetKey(olc::ENTER).bPressed)
+				if (game->PressConfirmButton())
 				{
 					if (game->mode == MAIN)
 						game->sb->IncrementCount("normal/main");
@@ -76,7 +76,7 @@ void Ending::Update()
 			}
 			else if (game->content == ENCORE)
 			{
-				if (game->GetKey(olc::ENTER).bPressed)
+				if (game->PressConfirmButton())
 				{					
 					if (mEncoreDialogTextID <= 13)
 						mEncoreDialogTextID++;
@@ -94,7 +94,7 @@ void Ending::Update()
 						mEncoreDialogTextID = 0;
 					}
 				}
-				if (game->GetKey(olc::ESCAPE).bPressed)
+				if (game->GetKey(olc::ESCAPE).bPressed || game->GetGamePadButton(olc::GPButtons::START).bPressed)
 					mEncoreDialogTextID = 14;
 			}
 		}
@@ -121,7 +121,7 @@ void Ending::Update()
 			if (game->content == NORMAL)
 			{
 				mVictory->DrawFullSprite(olc::vi2d(120, 120));
-				game->DrawStringDecal(olc::vi2d(100, 180), "Press Enter to go back to main menu!");
+				game->DrawStringDecalXAligned("Press Enter/A button to go back to main menu!", olc::vi2d(0, 180));
 			}
 			else
 			{
@@ -201,7 +201,7 @@ void Ending::Update()
 		if (mCanType)
 		{
 			game->timeAttack->PrintTime();
-			game->DrawStringDecalXAligned("Enter your name:", olc::vi2d(0, 120), olc::WHITE, {2.0f, 2.0f});
+			game->DrawStringDecalXAligned("Enter your name:", olc::vi2d(0, 104), olc::WHITE, {2.0f, 2.0f});
 			game->FillRectDecal(olc::vi2d(game->ScreenWidth() / 2 - 5 * 16 - 5, 144), olc::vi2d(10 * 16 + 10, 16 + 10), olc::BLUE);
 			game->DrawStringDecal(olc::vi2d(game->ScreenWidth() / 2 - 5 * 16, 144 + 5), mTimeScoreName,  olc::WHITE, { 2.0f, 2.0f });
 			game->DrawStringDecalXAligned("Press Enter to finish name typing", olc::vi2d(0, 288));
@@ -235,97 +235,84 @@ void Ending::EncoreDialog()
 		game->FillRectDecal(olc::vi2d(22, 243), olc::vi2d(1, 60));
 		game->FillRectDecal(olc::vi2d(22, 303), olc::vi2d(435, 1));
 		game->FillRectDecal(olc::vi2d(457, 243), olc::vi2d(1, 60));
-		game->DrawStringDecal(olc::vi2d(game->ScreenWidth() / 2 - 23 * 8, 307), "Enter:Continue                        ESC:Skip");
+		game->DrawStringDecal(olc::vi2d(game->ScreenWidth() / 2 - 23 * 8, 307), "Enter/A button:Continue        ESC/Start:Skip");
 	}
 	else if (mEncoreDialogTextID == 14)
-		game->DrawStringDecal(olc::vi2d(game->ScreenWidth() / 2 - 18 * 8, 307), "Press Enter to go back to main menu!");
+		game->DrawStringDecalXAligned("Press Enter/A button to go back to main menu!", olc::vi2d(0, 307));
 
 	if (mEncoreDialogTextID == 0)
 	{
-		game->DrawStringDecal(olc::vi2d(29, 250), "Let's Platform Outdoors guy:");
-		game->DrawStringDecal(olc::vi2d(29, 260), "Well, well, well, if it isn't a small rectangle that");
-		game->DrawStringDecal(olc::vi2d(29, 270), "has enjoyed the success of olcCodeJam 2020.");
+		game->DrawStringDecal(olc::vi2d(29, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(29, 260), "Hello!");
 	}
 	else if (mEncoreDialogTextID == 1)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Let's Platform Outdoors guy:");
-		game->DrawStringDecal(olc::vi2d(27, 260), "Enjoying your fame? Of course you are. You are");
-		game->DrawStringDecal(olc::vi2d(27, 270), "afterall much more succesful than i was in the");
-		game->DrawStringDecal(olc::vi2d(27, 280), "olcBeatTheBoredom.");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Escape the Machine guy:");
+		game->DrawStringDecal(olc::vi2d(27, 260), "Hi.");
 	}
 	else if (mEncoreDialogTextID == 2)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Let's Platform Outdoors guy:");
-		game->DrawStringDecal(olc::vi2d(27, 260), "But don't get too cocky. You only got at 19th");
-		game->DrawStringDecal(olc::vi2d(27, 270), "spot. Though it is better than my 81st spot.");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(27, 260), "How's it going?");
 	}
 	else if (mEncoreDialogTextID == 3)
 	{
-		mLpoGuy->sprSheetOffset = { 1, 0 };
-		game->DrawStringDecal(olc::vi2d(27, 250), "Let's Platform Outdoors guy:");
-		game->DrawStringDecal(olc::vi2d(27, 260), "Because the programmer here who made your game was");
-		game->DrawStringDecal(olc::vi2d(27, 270), "too incompetent to make an actual platformer.");
-		game->DrawStringDecal(olc::vi2d(27, 280), "Instead, i got to enjoy being a boring walking");
-		game->DrawStringDecal(olc::vi2d(27, 290), "simulator. How could you do this to me?!");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Escape the Machine guy:");
+		game->DrawStringDecal(olc::vi2d(27, 260), "Oh, you know. Escaping the machine and all.");
+		game->DrawStringDecal(olc::vi2d(27, 270), "You?");
 	}
 	else if (mEncoreDialogTextID == 4)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Alexio:");
-		game->DrawStringDecal(olc::vi2d(27, 260), "Oh come on. It was my very first participation in");
-		game->DrawStringDecal(olc::vi2d(27, 270), "a jam. Cut me some slack.");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(27, 260), "Eh, not much. Saving the world and stuff.");
 	}
 	else if (mEncoreDialogTextID == 5)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Let's Platform Outdoors guy:");
-		game->DrawStringDecal(olc::vi2d(27, 260), "And you have to toss me into your lameness. Wow,");
-		game->DrawStringDecal(olc::vi2d(27, 270), "that's a d*** move.");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Escape the Machine guy:");
+		game->DrawStringDecal(olc::vi2d(27, 260), "Oh cool. Wish i could do that.");
 	}
 	else if (mEncoreDialogTextID == 6)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Alexio:");
-		game->DrawStringDecal(olc::vi2d(27, 260), "HEY, HEY, don't curse. Kids might be playing this.");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(27, 260), "Would you believe all i had to do is to collect");
+		game->DrawStringDecal(olc::vi2d(27, 270), "certain coins just to have the graphics of the");
+		game->DrawStringDecal(olc::vi2d(27, 280), "world reappear?");
 	}
 	else if (mEncoreDialogTextID == 7)
 	{
-		mLpoGuy->sprSheetOffset = { 2, 0 };
-		game->DrawStringDecal(olc::vi2d(27, 250), "Let's Platform Outdoors guy:");
-		game->DrawStringDecal(olc::vi2d(27, 260), "OH SURE!! Because you are now top star!! Everyone");
-		game->DrawStringDecal(olc::vi2d(27, 270), "wants to play your games. They just want to drop");
-		game->DrawStringDecal(olc::vi2d(27, 280), "their lives to play your games. SURE! Pro devs");
-		game->DrawStringDecal(olc::vi2d(27, 290), "ain't got nothing on you.");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Escape the Machine guy:");
+		game->DrawStringDecal(olc::vi2d(27, 260), "Wow! That easy?");
 	}
 	else if (mEncoreDialogTextID == 8)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Alexio:");
-		game->DrawStringDecal(olc::vi2d(27, 260), "Ok, ok, i get it! Dear lord, calm down.");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(27, 260), "Apparently.");
 	}
 	else if (mEncoreDialogTextID == 9)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Alexio:");
-		game->DrawStringDecal(olc::vi2d(27, 260), "Tell you what, I will make it up to you. Would you");
-		game->DrawStringDecal(olc::vi2d(27, 270), "like me to put you in some of the future games i want");
-		game->DrawStringDecal(olc::vi2d(27, 280), "to make?");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Escape the Machine guy:");
+		game->DrawStringDecal(olc::vi2d(27, 260), "Huh. I oughta give it a try.");
 	}
 	else if (mEncoreDialogTextID == 10)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Let's Platform Outdoors guy:");
-		game->DrawStringDecal(olc::vi2d(27, 260), "Promise?");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(27, 260), "........");
 	}
 	else if (mEncoreDialogTextID == 11)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Alexio:");
-		game->DrawStringDecal(olc::vi2d(27, 260), "Promise.");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(27, 260), "So the programmer still can't draw graphics");
+		game->DrawStringDecal(olc::vi2d(27, 270), "for your game?");
 	}
 	else if (mEncoreDialogTextID == 12)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Let's Platform Outdoors guy:");
-		game->DrawStringDecal(olc::vi2d(27, 260), "...........................");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Escape the Machine guy:");
+		game->DrawStringDecal(olc::vi2d(27, 260), "Nope.");
 	}
 	else if (mEncoreDialogTextID == 13)
 	{
-		mLpoGuy->sprSheetOffset = { 3, 0 };
-		game->DrawStringDecal(olc::vi2d(27, 250), "Let's Platform Outdoors guy:");
-		game->DrawStringDecal(olc::vi2d(27, 260), "DEAL!!!");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(27, 260), "Figures. Talk about lazy dev, am i right?");
 	}
 	
 }
