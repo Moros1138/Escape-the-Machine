@@ -242,7 +242,7 @@ void Ending::EncoreDialog()
 
 	if (mEncoreDialogTextID == 0)
 	{
-		game->DrawStringDecal(olc::vi2d(29, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(29, 250), "Save the Worlds guy:");
 		game->DrawStringDecal(olc::vi2d(29, 260), "Hello!");
 	}
 	else if (mEncoreDialogTextID == 1)
@@ -252,7 +252,7 @@ void Ending::EncoreDialog()
 	}
 	else if (mEncoreDialogTextID == 2)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Save the Worlds guy:");
 		game->DrawStringDecal(olc::vi2d(27, 260), "How's it going?");
 	}
 	else if (mEncoreDialogTextID == 3)
@@ -263,7 +263,7 @@ void Ending::EncoreDialog()
 	}
 	else if (mEncoreDialogTextID == 4)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Save the Worlds guy:");
 		game->DrawStringDecal(olc::vi2d(27, 260), "Eh, not much. Saving the world and stuff.");
 	}
 	else if (mEncoreDialogTextID == 5)
@@ -273,7 +273,7 @@ void Ending::EncoreDialog()
 	}
 	else if (mEncoreDialogTextID == 6)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Save the Worlds guy:");
 		game->DrawStringDecal(olc::vi2d(27, 260), "Would you believe all i had to do is to collect");
 		game->DrawStringDecal(olc::vi2d(27, 270), "certain coins just to have the graphics of the");
 		game->DrawStringDecal(olc::vi2d(27, 280), "world reappear?");
@@ -285,7 +285,7 @@ void Ending::EncoreDialog()
 	}
 	else if (mEncoreDialogTextID == 8)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Save the Worlds guy:");
 		game->DrawStringDecal(olc::vi2d(27, 260), "Apparently.");
 	}
 	else if (mEncoreDialogTextID == 9)
@@ -295,12 +295,12 @@ void Ending::EncoreDialog()
 	}
 	else if (mEncoreDialogTextID == 10)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Save the Worlds guy:");
 		game->DrawStringDecal(olc::vi2d(27, 260), "........");
 	}
 	else if (mEncoreDialogTextID == 11)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Save the Worlds guy:");
 		game->DrawStringDecal(olc::vi2d(27, 260), "So the programmer still can't draw graphics");
 		game->DrawStringDecal(olc::vi2d(27, 270), "for your game?");
 	}
@@ -311,7 +311,7 @@ void Ending::EncoreDialog()
 	}
 	else if (mEncoreDialogTextID == 13)
 	{
-		game->DrawStringDecal(olc::vi2d(27, 250), "Save the World guy:");
+		game->DrawStringDecal(olc::vi2d(27, 250), "Save the Worlds guy:");
 		game->DrawStringDecal(olc::vi2d(27, 260), "Figures. Talk about lazy dev, am i right?");
 	}
 	

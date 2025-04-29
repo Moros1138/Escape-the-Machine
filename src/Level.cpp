@@ -58,7 +58,7 @@ Level::Level()
 
 	tileSize = { 16, 16 };
 
-	nID = 16;
+	nID = 1;
 	colorFloorLockLevel = false;
 	branched = false;
 	strID = (nID != 16) ? std::to_string(nID) : "final";

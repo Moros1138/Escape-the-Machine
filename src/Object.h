@@ -64,6 +64,7 @@ public:
 	Player(const olc::vf2d& position, const olc::Pixel& color = olc::WHITE, const olc::vi2d& size = { 16, 16 });
 
 	void Behaviour() override;
+	void Draw() override;
 
 	void Death();
 private:

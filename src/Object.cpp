@@ -151,17 +151,22 @@ void Player::Behaviour()
 		}
 		else
 		{
-			velocity.x = mSpeed * game->GetGamepadAxis(olc::GPAxes::LX);
-			velocity.y = mSpeed * game->GetGamepadAxis(olc::GPAxes::LY);
-		}
-
-		if (game->levels->GetTile(position + 0.5f) == '.' || game->levels->GetTile(position + 0.5f) == '-')
-		{			
-			game->playerControl = false;
+			velocity.x = game->GetGamepadAxis(olc::GPAxes::LX);
+			velocity.y = game->GetGamepadAxis(olc::GPAxes::LY);
 		}
 	}
 
-	olc::vf2d newPlayerPos = position + (velocity.norm() * mSpeed) * (1.0f / 60.0f);
+	float newMagnitude = velocity.mag();
+	if (newMagnitude > 1.0f)
+		newMagnitude = 1.0f;
+
+	olc::vf2d newVelocity = velocity * newMagnitude;
+	olc::vf2d newPlayerPos = position + newVelocity * mSpeed * (1.0f / 60.0f);
+
+	if (game->levels->GetTile(newPlayerPos + 0.5f) == '.' || game->levels->GetTile(newPlayerPos + 0.5f) == '-')
+	{
+		game->playerControl = false;
+	}
 
 	if (velocity.x < 0.0f)
 	{
@@ -217,6 +222,20 @@ void Player::Behaviour()
 	}	
 
 	position = newPlayerPos;	
+}
+
+void Player::Draw()
+{
+	game->FillRectDecal(position * 16, size, color);
+	
+	if (game->playerControl)
+	{
+		game->FillRectDecal((position + 0.5) * 16, olc::vf2d(0.5f, 0.5f), (color == olc::GREEN) ? olc::BLACK : olc::WHITE);
+		game->FillRectDecal(olc::vf2d((position.x + 0.5) * 16 - 0.5f, (position.y + 0.5) * 16), olc::vf2d(0.5f, 0.5f), (color == olc::GREEN) ? olc::BLACK : olc::WHITE);
+		game->FillRectDecal(olc::vf2d((position.x + 0.5) * 16 + 0.5f, (position.y + 0.5) * 16), olc::vf2d(0.5f, 0.5f), (color == olc::GREEN) ? olc::BLACK : olc::WHITE);
+		game->FillRectDecal(olc::vf2d((position.x + 0.5) * 16, (position.y + 0.5) * 16 + 0.5f), olc::vf2d(0.5f, 0.5f), (color == olc::GREEN) ? olc::BLACK : olc::WHITE);
+		game->FillRectDecal(olc::vf2d((position.x + 0.5) * 16, (position.y + 0.5) * 16 - 0.5f), olc::vf2d(0.5f, 0.5f), (color == olc::GREEN) ? olc::BLACK : olc::WHITE);
+	}
 }
 
 void Player::Death()
