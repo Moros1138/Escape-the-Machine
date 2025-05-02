@@ -1,5 +1,7 @@
 #include "Game.h"
 
+constexpr float thirtyFramesPerSecond = 1.0f / 30.f;
+
 Game::Game()
 {
     sAppName = "Escape the Machine";
@@ -52,6 +54,7 @@ bool Game::OnUserCreate()
 
 bool Game::OnUserUpdate(float fElapsedTime)
 {
+    fElapsedTime = std::clamp(fElapsedTime, 0.0f, thirtyFramesPerSecond);
     globalDeltaTime = fElapsedTime;
 
     if (gamepad == nullptr || !gamepad->stillConnected)
