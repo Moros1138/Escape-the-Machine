@@ -244,27 +244,21 @@ if (EMSCRIPTEN)
         target_link_options(
             ${OutputExecutable}
             PRIVATE
-            -sALLOW_MEMORY_GROWTH=1
-            -sMAX_WEBGL_VERSION=2
-            -sMIN_WEBGL_VERSION=2
-            -sUSE_LIBPNG=1
-            -sLLD_REPORT_UNDEFINED
-            -s ASYNCIFY
-            -sASYNCIFY_IMPORTS=hamsterNet__initSession,hamsterNet__setRacerName,hamsterNet__startRace,hamsterNet__finishRace,hamsterNet__getLeaderboard,hamsterNet__startPause,hamsterNet__endPause
-            --preload-file ${SOURCE_DATA_DIR}@assets)
-    else()
-        target_link_options(
-            ${OutputExecutable}
-            PRIVATE
-            -sALLOW_MEMORY_GROWTH=1
-            -sMAX_WEBGL_VERSION=2
-            -sMIN_WEBGL_VERSION=2
-            -sUSE_LIBPNG=1
-            -sLLD_REPORT_UNDEFINED
-            -s ASYNCIFY
-            -sASYNCIFY_IMPORTS=hamsterNet__initSession,hamsterNet__setRacerName,hamsterNet__startRace,hamsterNet__finishRace,hamsterNet__getLeaderboard,hamsterNet__startPause,hamsterNet__endPause
-            )
+            --preload-file ${SOURCE_DATA_DIR}@assets
+        )
     endif()
+    
+    target_link_options(
+        ${OutputExecutable}
+        PRIVATE
+        -sALLOW_MEMORY_GROWTH=1
+        -sMAX_WEBGL_VERSION=2
+        -sMIN_WEBGL_VERSION=2
+        -sUSE_LIBPNG=1
+        -sLLD_REPORT_UNDEFINED
+        -s ASYNCIFY
+        -sASYNCIFY_IMPORTS=escapeNet__initSession,escapeNet__setRacerName,escapeNet__startRace,escapeNet__stopRace,escapeNet__finishRace,escapeNet__startPause,escapeNet__endPause,escapeNet__getLeaderboard
+    )
     
     set_target_properties(${OutputExecutable} PROPERTIES LINK_FLAGS "--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/emscripten_shell.html")
 
