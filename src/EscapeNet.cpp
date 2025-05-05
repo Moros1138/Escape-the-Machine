@@ -19,9 +19,10 @@ EM_JS(int, escapeNet__initSession, (), {
             })
             .catch((err) =>
             {
-                console.error(err.message);
+                if(err === "unwind") return;
+                console.error(err);
                 wakeUp(0);
-            })    
+            })
     });
 });
 
@@ -49,6 +50,7 @@ EM_JS(int, escapeNet__setRacerName, (const char* str), {
         })
         .catch((err) =>
         {
+            if(err === "unwind") return;
             console.error(err.message);
             wakeUp(0);
         })    
@@ -78,6 +80,7 @@ EM_JS(int, escapeNet__startRace, (), {
         })
         .catch((err) =>
         {
+            if(err === "unwind") return;
             console.error(err.message);
             wakeUp(0);
         })    
@@ -112,6 +115,7 @@ EM_JS(int, escapeNet__stopRace, (), {
         })
         .catch((err) =>
         {
+            if(err === "unwind") return;
             console.error(err.message);
             wakeUp(0);
         })    
@@ -153,6 +157,7 @@ EM_JS(int, escapeNet__finishRace, (const char* raceMode, int raceTime), {
         })
         .catch((err) =>
         {
+            if(err === "unwind") return;
             console.error(err.message);
             wakeUp(0);
         })    
@@ -182,6 +187,7 @@ EM_JS(int, escapeNet__startPause, (), {
         })
         .catch((err) =>
         {
+            if(err === "unwind") return;
             console.error(err.message);
             wakeUp(0);
         })    
@@ -210,6 +216,7 @@ EM_JS(int, escapeNet__endPause, (), {
         })
         .catch((err) =>
         {
+            if(err === "unwind") return;
             console.error(err.message);
             wakeUp(0);
         })    
@@ -250,6 +257,7 @@ EM_JS(int, escapeNet__getLeaderboard, (const char* mode, const char* sortBy, con
         })
         .catch((err) =>
         {
+            if(err === "unwind") return;
             console.error(err.message);
             wakeUp(0);
         });
