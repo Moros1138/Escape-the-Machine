@@ -9,72 +9,26 @@ TimeAttack::TimeAttack()
     timeRunning = false;
     m_nStr = 0;
 
-    mStart = std::chrono::system_clock::now();
-    
     mCurrentMiliSeconds = 0;
     mCurrentSeconds = 0;
     mCurrentMinutes = 0;
 
     scoreList = ScoreList::NORMAL;
-
-    mCurseWords =
-    {
-        "fuck",
-        "shit",
-        "shiat",
-        "sheet",
-        "bullshit",
-        "ass",
-        "anus",
-        "cock",
-        "cuck",
-        "dick",
-        "crap",
-        "bullcrap",
-        "hell",
-        "damn",
-        "cum",
-        "devil",
-        "satan",
-        "wanker",
-        "bollocks",
-        "twat",
-        "bitch",
-        "whore",
-        "slut",
-        "niger",
-        "neeger",
-        "nigger",
-        "neegger",
-        "nigga",
-        "niggah",
-        "negro",
-        "weeb"  // by AlterEgo's request
-    };    
 }
 
 void TimeAttack::Update()
 {     
-    mEnd = std::chrono::system_clock::now();
-
-    mCurrentMiliSeconds = std::chrono::duration_cast<std::chrono::milliseconds>(mEnd - mStart).count();
-    mCurrentSeconds     = std::chrono::duration_cast<std::chrono::seconds>(mEnd - mStart).count();
-    mCurrentMinutes     = std::chrono::duration_cast<std::chrono::minutes>(mEnd - mStart).count();
-
-    while (mCurrentMiliSeconds >= 1000)
-    {
-        mCurrentMiliSeconds -= 1000;
-    }
-
-    while (mCurrentSeconds >= 60)
-    {
-        mCurrentSeconds -= 60;
-    }    
+    int duration = game->escapeNet->GetCurrentRaceTime();
+    
+    mCurrentMiliSeconds = duration % 1000;
+    mCurrentSeconds     = (duration / 1000) % 60;
+    mCurrentMinutes     = (duration / 60000);
 }
 
 void TimeAttack::Start()
 {
-    mStart = std::chrono::system_clock::now();
+    std::cout << "START\n";
+    game->escapeNet->StartRace(game->mainMenu->strMode);
 }
 
 void TimeAttack::PrintTime()
@@ -89,23 +43,6 @@ void TimeAttack::PrintTime()
        game->DrawStringDecal(olc::vi2d(game->ScreenWidth() / 2 - (GetTimer().size() / 2) * 24, 24), GetTimer(),
            olc::WHITE, { 3.0f, 3.0f });
    }    
-}
-
-bool TimeAttack::FindCurseWord(const std::string& name)
-{
-    for (int i = 0; i < mCurseWords.size(); i++)
-    {
-        auto it = std::search(
-            name.begin(), name.end(),
-            mCurseWords[i].begin(), mCurseWords[i].end(),
-            [](char ch1, char ch2) { return std::toupper(ch1) == std::toupper(ch2); }
-        );
-
-        if (it == name.end() && i == mCurseWords.size() - 1)
-            return false;
-        else if (it != name.end())
-            return true;
-    }    
 }
 
 void TimeAttack::ClearTimeBuffer()
@@ -142,6 +79,7 @@ void TimeAttack::PrintLeaderboard(ScoreList sl, const std::string& name, int min
 
 void TimeAttack::Reset()
 {
+    std::cout << "RESET\n";
     Start();
 }
 

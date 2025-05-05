@@ -47,7 +47,8 @@ bool Game::OnUserCreate()
     levels      = new Level();
     sb          = new Scoreboard();
 
-    starMap->Create();    
+    starMap->Create();
+    escapeNet->InitSession();
 
     return true;
 }
@@ -102,13 +103,23 @@ bool Game::OnUserFixedUpdate()
     if (levels->GetTile(player->position.x + 0.5f, player->position.y + 0.5f) == 'C')
     {
         if (mode == TIME_ATTACK)
+        {
+            // hack to trigger once
+            if(timeAttack->timeRunning)
+            {
+                std::cout << "END RACE\n";
+                escapeNet->StartPause();
+            }
             timeAttack->timeRunning = false;
+        }
+            
         playerControl = false;
         if (player->size.x <= 0.0f &&
             player->size.y <= 0.0f)
         {
             vObjects.clear();
             state = ENDING;
+            ending->Init();
         }
     }
 
@@ -117,8 +128,16 @@ bool Game::OnUserFixedUpdate()
 
 void Game::Update()
 {
-    if (GetKey(olc::ESCAPE).bPressed || GetGamePadButton(olc::GPButtons::START).bPressed)
+    if ((GetKey(olc::ESCAPE).bPressed || GetGamePadButton(olc::GPButtons::START).bPressed) && !pauseMenu->bIsOn)
+    {
         pauseMenu->bIsOn = true;
+        if(timeAttack->timeRunning)
+        {
+            std::cout << "PAUSE START\n";
+            escapeNet->StartPause();
+        }
+    }
+        
 
     if (pauseMenu->bIsOn)
         pauseMenu->Update(levels, timeAttack, player->initPosition);

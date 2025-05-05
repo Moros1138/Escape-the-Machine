@@ -14,8 +14,8 @@ Ending::Ending()
 	mLpoGuy    =  new SpriteObject("LPOguy");
 
 	mTimeScoreName = "";
-	incrementCount = true;
 	mCanType = true;
+	mCurseWordFound = false;
 
 	mClouds = new SpriteObject* [12];
     for (int i = 0; i < 12; i++)
@@ -38,6 +38,12 @@ Ending::~Ending()
 		delete mClouds[i];
 
 	delete[] mClouds;
+}
+
+void Ending::Init()
+{
+	mCanType = true;
+	mTimeScoreName = "";
 }
 
 void Ending::Update()
@@ -64,11 +70,6 @@ void Ending::Update()
 			{
 				if (game->PressConfirmButton())
 				{
-					if (game->mode == MAIN)
-						game->sb->IncrementCount("normal/main");
-					else if (game->mode == SURVIVAL)
-						game->sb->IncrementCount("normal/survival");
-
 					mTimer = 0.0f;
 					game->Restart();
 					game->state = MAIN_MENU;
@@ -82,11 +83,6 @@ void Ending::Update()
 						mEncoreDialogTextID++;
 					else
 					{
-						if (game->mode == MAIN)
-							game->sb->IncrementCount("encore/main");
-						else if (game->mode == SURVIVAL)
-							game->sb->IncrementCount("encore/survival");
-
 						mTimer = 0.0f;
 						game->Restart();
 						game->state = MAIN_MENU;
@@ -139,8 +135,6 @@ void Ending::Update()
 	{
 		game->starMap->Update();
 
-		bool curseWordFound = game->timeAttack->FindCurseWord(mTimeScoreName);
-
 		if (mCanType)
 		{	
 			if (mTimeScoreName.size() < 10)
@@ -162,33 +156,35 @@ void Ending::Update()
 			if (game->GetKey(olc::BACK).bPressed && mTimeScoreName.size() > 0)
 				mTimeScoreName.resize(mTimeScoreName.size() - 1);
 
-			if (game->GetKey(olc::ENTER).bPressed && !curseWordFound)
+			if (game->GetKey(olc::ENTER).bPressed)
 			{
-				mCanType = false;
+				mCurseWordFound = !game->escapeNet->SetName(mTimeScoreName);
+				std::cout << mCurseWordFound << "\n";
+				if(!mCurseWordFound)
+				{
+					game->escapeNet->EndPause();
+					mCanType = false;
 
-				uint32_t& minutes = game->timeAttack->mCurrentMinutes;
-				uint32_t& seconds = game->timeAttack->mCurrentSeconds;
-				uint32_t& miliseconds = game->timeAttack->mCurrentMiliSeconds;
-				
-				//Update Leaberboard
-				if (game->content == NORMAL)
-					game->sb->NewScore("normal", mTimeScoreName, minutes, seconds, miliseconds);
-				else
-					game->sb->NewScore("encore", mTimeScoreName, minutes, seconds, miliseconds);
+					uint32_t& minutes = game->timeAttack->mCurrentMinutes;
+					uint32_t& seconds = game->timeAttack->mCurrentSeconds;
+					uint32_t& miliseconds = game->timeAttack->mCurrentMiliSeconds;
+					
+					//Update Leaberboard
+					game->escapeNet->FinishRace();
 
-				game->sb->RefreshScores();				
+					// if (game->content == NORMAL)
+					// 	game->sb->NewScore("normal", mTimeScoreName, minutes, seconds, miliseconds);
+					// else
+					// 	game->sb->NewScore("encore", mTimeScoreName, minutes, seconds, miliseconds);
+	
+					game->sb->RefreshScores();				
+				}
 			}			
 		}
 		else
 		{
 			if (game->GetKey(olc::ENTER).bPressed)
 			{
-				incrementCount = true;
-				if (game->content == NORMAL)
-					game->sb->IncrementCount("normal/time");
-				else
-					game->sb->IncrementCount("encore/time");
-
 				game->Restart();
 				game->state = MAIN_MENU;
 			}
@@ -217,7 +213,7 @@ void Ending::Update()
 			game->DrawStringDecalXAligned("Press enter to go to main menu", olc::vi2d(0, 286));
 		}
 
-		if (curseWordFound)
+		if (mCurseWordFound)
 		{
 			game->DrawStringDecalXAligned("FORBIDDEN WORD!!!", olc::vi2d(0, 208), olc::WHITE, { 2.0f, 2.0f });
 			game->DrawStringDecalXAligned("PLEASE CHOOSE ANOTHER NAME", olc::vi2d(0, 226), olc::WHITE, { 2.0f, 2.0f });

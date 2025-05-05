@@ -221,6 +221,11 @@ void PauseMenu::Update(Level* level, TimeAttack* ta, olc::vf2d& playerInitPositi
             if (mPauseHoverLighted == 0)
             {
                 bIsOn = false;
+                if(game->timeAttack->timeRunning)
+                {
+                    std::cout << "PAUSE END\n";
+                    game->escapeNet->EndPause();
+                }
             }
             else
             {
@@ -238,16 +243,37 @@ void PauseMenu::Update(Level* level, TimeAttack* ta, olc::vf2d& playerInitPositi
             if (mPauseHoverLighted == 0)
             {
                 if (m_strPrompt == "You are leaving the game!")
+                {
+                    if(game->timeAttack->timeRunning)
+                    {
+                        std::cout << "EXIT\n";
+                        game->escapeNet->StopRace();
+                    }
                     game->state = MAIN_MENU;
-
-                game->timeAttack->Reset();
-                game->Restart();                
-                bIsOn = false;
+                    game->Restart();
+                }
+                    
+                if (m_strPrompt == "You will go back to first level!")
+                {
+                    if(game->timeAttack->timeRunning)
+                    {
+                        std::cout << "RESTART\n";
+                        game->escapeNet->StopRace();
+                    }
+                    game->timeAttack->Reset();
+                    game->Restart();
+                }
             }
 
+            if (mPauseHoverLighted == 1 && game->timeAttack->timeRunning)
+            {
+                std::cout << "PAUSE END\n";
+                game->escapeNet->EndPause();
+            }
+
+            bIsOn = false;
             mPauseHoverLighted = 0;
             m_bPrompt = false;
-            
         }
     }   
 }

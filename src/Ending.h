@@ -20,12 +20,16 @@ private:
 	int mEncoreDialogTextID;
 	float mTimer;
 	bool mCanType;
-	bool incrementCount;
+	bool mCurseWordFound;
+
 public:
 	Ending();
 	~Ending();
 
+	void Init();
 	void Update();
+	
+
 private:
 	void EncoreDialog();
 };

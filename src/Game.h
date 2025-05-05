@@ -12,6 +12,7 @@
 #include "StarMap.h"
 #include "TimeAttack.h"
 #include "TitleCard.h"
+#include "EscapeNet.h"
 
 #include <vector>
 
@@ -56,6 +57,8 @@ public:
 	StarMap* starMap;
 	Level* levels;
 	Player* player;
+	EscapeNet* escapeNet;
+		
 	std::vector<Object*> vObjects;
 	bool playerControl;
 

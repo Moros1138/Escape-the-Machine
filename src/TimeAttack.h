@@ -21,10 +21,8 @@ private:
 	std::string mInputName;
 	bool mCanType;
 	int m_nStr;
-	std::chrono::time_point<std::chrono::system_clock> mStart, mEnd;
 	std::stringstream mTimeScoreBuf;
 	std::stringstream mCurrentTimeScoreBuf;
-	std::array<std::string, 31> mCurseWords;
 public:
 	unsigned int mCurrentMinutes;
 	unsigned int mCurrentSeconds;
@@ -39,7 +37,6 @@ public:
 	void Start();
 	void PrintTime();
 
-	bool FindCurseWord(const std::string& name);
 	void ClearTimeBuffer();
 
 	void PrintLeaderboard(ScoreList sl, const std::string& name = "", int minutes = -1, int seconds = -1, int miliseconds = -1);
