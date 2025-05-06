@@ -39,16 +39,11 @@ jobs:
           cmake --build build --config=Release
         shell: bash
       
-      - name: Zip Up
-        run: |
-          cd build/bin
-          zip -r emscripten.zip .
-
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: emscripten
-          path: build/bin/emscripten.zip
+          path: build/bin/*
 
   ubuntu:
     name: Ubuntu
@@ -79,17 +74,11 @@ jobs:
           cmake --build build
         shell: bash
       
-      - name: Zip Up
-        run: |
-          cd build/bin
-          zip -r ubuntu.zip .
-
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ubuntu
-          path: build/bin/ubuntu.zip
-
+          path: build/bin/*
   windows:
     name: Windows
     runs-on: windows-latest
@@ -105,15 +94,9 @@ jobs:
           cmake --build build
         shell: pwsh
 
-      - name: Zip Up
-        run: |
-          cd build/bin
-          Compress-Archive -Path * -DestinationPath windows.zip
-        shell: pwsh
-
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows
-          path: build/bin/windows.zip
+          path: build/bin/*
       
