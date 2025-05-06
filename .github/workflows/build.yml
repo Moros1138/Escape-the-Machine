@@ -48,7 +48,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: emscripten
-          path: emscripten.zip
+          path: build/bin/emscripten.zip
 
   ubuntu:
     name: Ubuntu
@@ -88,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ubuntu
-          path: ubuntu.zip
+          path: build/bin/ubuntu.zip
 
   windows:
     name: Windows
@@ -115,5 +115,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows
-          path: windows.zip
+          path: build/bin/windows.zip
       
