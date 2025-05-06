@@ -40,7 +40,9 @@ jobs:
         shell: bash
       
       - name: Zip Up
-        run: zip -r emscripten.zip build/bin/
+        run: |
+          cd build/bin
+          zip -r emscripten.zip .
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
@@ -78,7 +80,9 @@ jobs:
         shell: bash
       
       - name: Zip Up
-        run: zip -r ubuntu.zip build/bin/
+        run: |
+          cd build/bin
+          zip -r ubuntu.zip .
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
@@ -102,7 +106,9 @@ jobs:
         shell: pwsh
 
       - name: Zip Up
-        run: Compress-Archive -Path build/bin/* -DestinationPath windows.zip
+        run: |
+          cd build/bin
+          Compress-Archive -Path * -DestinationPath windows.zip
         shell: pwsh
 
       - name: Upload Build Artifact
