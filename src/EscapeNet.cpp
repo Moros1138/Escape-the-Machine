@@ -284,10 +284,13 @@ extern "C"
         std::cout << "escapeNet__startRace is not implemented on this platform, artificially succeeding.\n";
         return 1;
     }
+    
     int escapeNet__stopRace()
     {
-        
+        std::cout << "escapeNet__stopRace is not implemented on this platform, artificially succeeding.\n";
+        return 1;
     }
+
     int escapeNet__finishRace(const char* raceMode, int raceTime)
     {
         std::cout << "escapeNet__finishRace is not implemented on this platform, artificially succeeding.\n";
