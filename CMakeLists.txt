@@ -114,6 +114,13 @@ if(APPLE)
     target_link_libraries(${OutputExecutable} PNG::PNG)
     include_directories(${PNG_INCLUDE_DIRS})
     
+    add_custom_command(
+        TARGET ${OutputExecutable}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/bin/assets
+    )
+        
 endif() # APPLE
 
 ######################################################################
@@ -145,6 +152,13 @@ if(WIN32 AND MINGW)
 
     # stdc++fs
     target_link_libraries(${OutputExecutable} stdc++fs)
+
+    add_custom_command(
+        TARGET ${OutputExecutable}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/bin/assets
+    )
 
 endif()
 
@@ -192,6 +206,13 @@ if(WIN32 AND MSVC)
     # Dwmapi
     set(DWMAPI_LIBRARY dwmapi)
     target_link_libraries(${OutputExecutable} ${DWMAPI_LIBRARY})
+    
+    add_custom_command(
+        TARGET ${OutputExecutable}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/bin/assets
+    )
 
 endif() # Visual Studio / MSVC
 
@@ -226,6 +247,13 @@ if(UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
 
     # dl, for miniaudio
     target_link_libraries(${OutputExecutable} dl)
+    
+    add_custom_command(
+        TARGET ${OutputExecutable}
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND}
+        ARGS -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets ${CMAKE_BINARY_DIR}/bin/assets
+    )
 
 endif() # Linux
 
