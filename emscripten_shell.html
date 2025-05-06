@@ -83,9 +83,14 @@
             text-align: center;
         }
         
+        body.start #pge-logo-container p {
+            text-shadow: .1rem .1rem .1rem #000;
+            margin-bottom: 0;
+        }
+
         body.start #pge-logo-container img {
             display: inline;
-            max-width: 15rem;
+            max-width: 30vw;
             width: 100%;
         }
 
@@ -121,6 +126,7 @@
 </head>
 
 <body>
+    <canvas id="stars"></canvas>
     <div id="container">
         <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
         <div id="start-screen">
@@ -132,6 +138,9 @@
             </p>
             
             <div id="pge-logo-container">
+                <p>
+                    Powered By:
+                </p>
                 <img id="pge-logo" src="web-assets/pge2_logo.png" alt="Powered by: olc::PixelGameEngine">
             </div>
         </div>
@@ -194,147 +203,68 @@ var Module = {
     {{{ SCRIPT }}}
 
     <script>
-        function ScreenWidth()
-        {
-            return Math.floor(window.innerWidth);
-        }
-        
-        function ScreenHeight()
-        {
-            return Math.floor(window.innerHeight);
-        }
-        
-        function Rand()
-        {
-            return Math.floor(Math.random() * 1000000);
-        }
-        
-        function TimeStamp()
-        {
-            return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
-        }
-        
-        var now, dt, last = TimeStamp();
-        
-        var StarMap = {
-            
-            mColors: [],
-            mStars: [],
-            interval: null,
-            create: function()
-            {
-                for(var i = 0; i < 400; i++)
-                {
-                    this.mStars.push({
-                        x: Rand() % ScreenWidth(),
-                        y: Rand() % ScreenHeight(),
-                        id: '#star-' + i.toString()
-                    });
-        
-                    this.mColors.push('#fff');
-        
-                    var elem = document.createElement('DIV');
-                    elem.setAttribute('id', 'star-' + i.toString());
-                    elem.style.display = "block";
-                    elem.style.position = "fixed";
-                    elem.style.width = ".2vw";
-                    elem.style.height =".2vw";
-                    elem.style.backgroundColor = "#fff";
-                    elem.style.top = "-50px";
-                    elem.style.left = "-50px";
-                    elem.style.zIndex = "-1";
-                    document.body.appendChild(elem);
-        
-                }
-            }, // create
-        
-            update: function(deltaTime)
-            {
-                for(var i = 0; i < this.mStars.length; i++)
-                {
-                    var modifier = 1.0;
-                    this.mColors[i] = '#fff';
-                    
-                    if(i <= this.mStars.length * 0.25)
-                    {
-                        modifier = 0.4;
-                        this.mColors[i] = '#424242';
-                    }
-                    else if(i <= this.mStars.length * 0.5)
-                    {
-                        modifier = 0.6;
-                        this.mColors[i] = '#808080';
-                    }
-                    else if(i <= this.mStars.length * 0.75)
-                    {
-                        modifier = 0.8;
-                        this.mColors[i] = '#c6c6c6';
-                    }
-                    
-                    this.mStars[i].y += (18 + deltaTime * modifier) * 0.1;
-                    
-                    if(this.mStars[i].y > ScreenHeight())
-                    {
-                        this.mStars[i].x = Rand() % ScreenWidth();
-                        this.mStars[i].y = 0;
-                    }
-                } // for mStars.length
-        
-            }, // update
-            
-            draw: function()
-            {
-                for(var i = 0; i < this.mStars.length; i++)
-                {
-                    var elem = document.querySelector(this.mStars[i].id);
-                    elem.style.left = this.mStars[i].x.toString() + 'px';
-                    elem.style.top = this.mStars[i].y.toString() + 'px';
-                    elem.style.backgroundColor = this.mColors[i];
-                } // for mStars.length
-            },
-        
-            frame: function()
-            {
-                now = TimeStamp();
-                dt = (now - last) / 1000;
-                last = now;
-                
-                StarMap.update(dt);
-                StarMap.draw();
-            },
-            
-            resize: function()
-            {
-                for(var i = 0; i < 400; i++)
-                {
-                    this.mStars[i].x = Rand() % ScreenWidth();
-                    this.mStars[i].y = Rand() % ScreenHeight();
-                }
-                StarMap.draw();
-            },
-        
-            start: function()
-            {
-                StarMap.frame();
-                StarMap.interal = setInterval(() =>
-                {
-                    StarMap.frame();
-                }, 32);
-            },
+        const canvas = document.getElementById('stars');
+        const ctx = canvas.getContext('2d');
 
-            stop: function()
-            {
-                clearInterval(StarMap.interval);
+        // Star class
+        class Star {
+            constructor() {
+                this.reset();
             }
-        };
-        
-        window.addEventListener('resize', function()
-        {
-            StarMap.resize();
-        });
-        
-        StarMap.create();
-        StarMap.start();
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.speed = Math.random();
+                this.size = () => { return 0.002 * canvas.width; };
+                this.opacity = Math.random() * 0.3 + 0.5;
+            }
+
+            update() {
+                this.y += this.speed;
+                if (this.y > canvas.height) {
+                    this.y = -30;
+                }
+            }
+
+            draw() {
+                const size = this.size();
+                ctx.beginPath();
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.fillRect(this.x - size / 2, this.y - size / 2, size, size);
+            }
+        }
+
+        // Create stars
+        const stars = [];
+        const numStars = 400;
+        for (let i = 0; i < numStars; i++) {
+            stars.push(new Star());
+        }
+
+        // Set canvas to full viewport size
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            stars.forEach(star => {
+                star.reset();
+            });
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Animation loop
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
     </script>
 </body>
 
