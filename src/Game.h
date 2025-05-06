@@ -16,7 +16,7 @@
 
 #include <vector>
 
-#ifndef __EMSCRIPTEN__
+#if !defined(__EMSCRIPTEN__) && !defined(__linux__)
 	#include <Windows.h>
 #endif
 

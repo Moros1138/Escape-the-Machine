@@ -2,7 +2,7 @@
 
 int main()
 {
-#ifndef __EMSCRIPTEN__		
+#if !defined(__EMSCRIPTEN__) && !defined(__linux__)
 	#ifdef _DEBUG
 		ShowWindow(GetConsoleWindow(), SW_SHOW);
 	#else
