@@ -160,7 +160,6 @@ void Ending::Update()
 			if (game->GetKey(olc::ENTER).bPressed)
 			{
 				mCurseWordFound = !game->escapeNet->SetName(mTimeScoreName);
-				std::cout << mCurseWordFound << "\n";
 				if(!mCurseWordFound)
 				{
 					game->escapeNet->EndPause();
@@ -172,12 +171,6 @@ void Ending::Update()
 					
 					//Update Leaberboard
 					game->escapeNet->FinishRace();
-
-					// if (game->content == NORMAL)
-					// 	game->sb->NewScore("normal", mTimeScoreName, minutes, seconds, miliseconds);
-					// else
-					// 	game->sb->NewScore("encore", mTimeScoreName, minutes, seconds, miliseconds);
-	
 					game->sb->RefreshScores();				
 				}
 			}			
