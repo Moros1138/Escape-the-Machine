@@ -288,7 +288,7 @@ extern "C"
     {
         
     }
-    int escapeNet__finishRace(const char* raceMap, const char* raceColor, int raceTime)
+    int escapeNet__finishRace(const char* raceMode, int raceTime)
     {
         std::cout << "escapeNet__finishRace is not implemented on this platform, artificially succeeding.\n";
         return 1;
