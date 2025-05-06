@@ -94,13 +94,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: 'recursive'
+      
       - name: Build
         run: |
           cmake . -B build
           cmake --build build
-      
+        shell: pwsh
+
       - name: Zip Up
-        run: zip -r windows.zip build/bin/
+        run: Compress-Archive -Path build/bin/* -DestinationPath windows.zip
+        shell: pwsh
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
