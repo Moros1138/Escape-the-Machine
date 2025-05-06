@@ -71,7 +71,7 @@ jobs:
           CXX: g++
         run: |
           cmake . -B build
-          cmake --build build
+          cmake --build build --config=Release
         shell: bash
       
       - name: Upload Build Artifact
@@ -91,7 +91,7 @@ jobs:
       - name: Build
         run: |
           cmake . -B build
-          cmake --build build
+          cmake --build build --config=Release
         shell: pwsh
 
       - name: Upload Build Artifact
