@@ -12,7 +12,8 @@ Ending::Ending()
     mEncore    =  new SpriteObject("Encore");
     mSurvive   =  new SpriteObject("Survival");
 	mLpoGuy    =  new SpriteObject("LPOguy");
-
+	mTimer = 0.0f;
+	mEncoreDialogTextID = 0;
 	mTimeScoreName = "";
 	mCanType = true;
 	mCurseWordFound = false;
@@ -108,12 +109,12 @@ void Ending::Update()
 			mGrass->DrawFullSprite(olc::vi2d(i * 32, 222.0f));
 
 		game->player->Draw();
-
+		
 		if (mTimer > 1.0f)
 		{
 			if (game->mode == SURVIVAL)
 				mSurvive->DrawFullSprite(olc::vi2d(110, 48));
-
+			
 			if (game->content == NORMAL)
 			{
 				mVictory->DrawFullSprite(olc::vi2d(120, 120));
