@@ -79,6 +79,7 @@ bool Game::OnUserCreate()
 }
 
 bool Game::OnUserUpdate(float fElapsedTime)
+{
     fElapsedTime = std::clamp(fElapsedTime, 0.0f, thirtyFramesPerSecond);
     globalDeltaTime = fElapsedTime;
 
