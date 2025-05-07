@@ -79,7 +79,8 @@ public:
 	void DrawStringDecalXAligned(const std::string& sText, const olc::vi2d& offset, const olc::Pixel& col = olc::WHITE, const olc::vf2d& scale = { 1.0f, 1.0f });
 
 	void Restart();
-
+	
+	bool IsGamePadReady();
 	olc::HWButton GetGamePadButton(olc::GPButtons b);
 	float GetGamepadAxis(olc::GPAxes a);
 	

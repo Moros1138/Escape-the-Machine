@@ -241,25 +241,36 @@ void Game::Restart()
     playerControl = true;
 }
 
+bool Game::IsGamePadReady()
+{
+    if (!bUseGamepad)
+        return false;
+    
+    // try to acquire a gamepad
+    if (gamepad == nullptr)
+        if (gamepad = olc::GamePad::selectWithAnyButton()) { } else { return false; }
+    
+    // if we're here, we have a gamepad, but it might have disconnected
+    if (!gamepad->stillConnected)
+        if (gamepad = olc::GamePad::selectWithAnyButton()) { } else { return false; }
+            
+    // if we're here, we definitely have a gamepad that is connected
+    return true;
+}
+
 olc::HWButton Game::GetGamePadButton(olc::GPButtons b)
 {
-    if(!bUseGamepad)
+    if(!bUseGamepad || !IsGamePadReady())
         return olc::HWButton();
     
-    if (gamepad == nullptr || !gamepad->stillConnected)
-        gamepad = olc::GamePad::selectWithAnyButton();
-
     return gamepad->getButton(b);
 }
 
 float Game::GetGamepadAxis(olc::GPAxes a)
 {
-    if(!bUseGamepad)
+    if(!bUseGamepad || !IsGamePadReady())
         return 0.0f;
-
-    if (gamepad == nullptr || !gamepad->stillConnected)
-        gamepad = olc::GamePad::selectWithAnyButton();
-
+    
     if (std::abs(gamepad->getAxis(a)) > 0.3f)
         return gamepad->getAxis(a);
 
