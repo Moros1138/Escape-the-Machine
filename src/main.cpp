@@ -15,3 +15,10 @@ int main()
 	delete game;
 	return 0;
 }
+
+#if defined(OLC_PLATFORM_WINAPI)
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+	main();
+}
+#endif
