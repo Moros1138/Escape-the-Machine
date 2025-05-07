@@ -2,6 +2,18 @@
 
 constexpr float thirtyFramesPerSecond = 1.0f / 30.f;
 
+#if defined(OLC_PLATFORM_X11)
+bool is_wsl2() {
+    std::ifstream file("/proc/version");
+    std::string line;
+    if (file && std::getline(file, line)) {
+        return line.find("microsoft") != std::string::npos ||
+               line.find("Microsoft") != std::string::npos;
+    }
+    return false;
+}
+#endif
+
 Game::Game()
 {
     sAppName = "Escape the Machine";
@@ -32,8 +44,20 @@ bool Game::OnUserCreate()
     fixedTimeSimulated = 0.0f;
     globalDeltaTime = 0.0f;
 
-    olc::GamePad::init();
+    #if defined(OLC_PLATFORM_X11)
 
+    if(!is_wsl2())
+    {
+        olc::GamePad::init();
+        bUseGamepad = true;
+    }
+
+    #else
+    
+    olc::GamePad::init();
+    bUseGamepad = true;
+    
+    #endif
     playerControl = true;
 
     state = MAIN_MENU;
@@ -55,7 +79,6 @@ bool Game::OnUserCreate()
 }
 
 bool Game::OnUserUpdate(float fElapsedTime)
-{
     fElapsedTime = std::clamp(fElapsedTime, 0.0f, thirtyFramesPerSecond);
     globalDeltaTime = fElapsedTime;
 
@@ -219,18 +242,26 @@ void Game::Restart()
 
 olc::HWButton Game::GetGamePadButton(olc::GPButtons b)
 {
-    if (gamepad != nullptr && gamepad->stillConnected)
-            return gamepad->getButton(b);
-    return olc::HWButton();
+    if(!bUseGamepad)
+        return olc::HWButton();
+    
+    if (gamepad == nullptr || !gamepad->stillConnected)
+        gamepad = olc::GamePad::selectWithAnyButton();
+
+    return gamepad->getButton(b);
 }
 
 float Game::GetGamepadAxis(olc::GPAxes a)
 {
-    if (gamepad != nullptr && gamepad->stillConnected)
-    {
-        if (std::abs(gamepad->getAxis(a)) > 0.3f)
-            return gamepad->getAxis(a);
-    }
+    if(!bUseGamepad)
+        return 0.0f;
+
+    if (gamepad == nullptr || !gamepad->stillConnected)
+        gamepad = olc::GamePad::selectWithAnyButton();
+
+    if (std::abs(gamepad->getAxis(a)) > 0.3f)
+        return gamepad->getAxis(a);
+
     return 0.0f;
 }
 

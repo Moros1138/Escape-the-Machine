@@ -65,6 +65,7 @@ public:
 	double fixedTimeSimulated;
 	float timer;
 	float globalDeltaTime;
+	bool bUseGamepad = false;
 public:
 	Game();
 	~Game();
