@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "EscapeNet.h"
 #include "json.hpp"
 
@@ -265,10 +267,59 @@ EM_JS(int, escapeNet__getLeaderboard, (const char* mode, const char* sortBy, con
 });
 
 #else
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(LeaderboardEntry, name, mode, time)
+
 extern "C"
 {
+    std::string g_raceMode = "";
+    std::string g_raceName = "";
+    int g_raceTime = 0;
+    std::vector<LeaderboardEntry> g_leaderboard;
+    std::vector<LeaderboardEntry> g_filteredLeaderboard;
+
     int escapeNet__initSession()
     { 
+        using nlohmann::json;
+
+        std::ifstream f("races.json");
+        if(!f.is_open())
+        {
+            for(int i = 0; i < 10; i++)
+            {
+                g_leaderboard.push_back({ "ALEXIO", "normal", 5999999 });
+                g_leaderboard.push_back({ "ALEXIO", "encore", 5999999 });
+            }
+
+            // --- Save to JSON file ---
+            json json_output;
+            json_output["leaderboard"] = g_leaderboard; // Serialize the vector
+
+            std::ofstream o("races.json");
+            if (o.is_open()) {
+                o << json_output.dump(4); // Pretty print with 4-space indent
+                o.close();
+                std::cout << "Leaderboard saved to leaderboard.json\n";
+            } else {
+                std::cerr << "Failed to open file for writing\n";
+                return 1;
+            }
+
+            f.open("races.json");
+        }
+
+        json json_input;
+        f >> json_input; // Parse JSON
+        f.close();
+    
+        // Deserialize the vector
+        g_leaderboard = json_input["leaderboard"].get<std::vector<LeaderboardEntry>>();
+        
+        for(auto entry : g_leaderboard)
+        {
+            std::cout << entry.mode << " " << entry.name << " " << entry.time << "\n";
+        }
+        
         std::cout << "escapeNet__initSession is not implemented on this platform, artificially succeeding.\n";
         return 1;
     }
@@ -276,6 +327,7 @@ extern "C"
     int escapeNet__setRacerName(const char* str)
     {
         std::cout << "escapeNet__setRacerName is not implemented on this platform, artificially succeeding.\n";
+        g_raceName = str;
         return 1;
     }
     
@@ -293,12 +345,97 @@ extern "C"
 
     int escapeNet__finishRace(const char* raceMode, int raceTime)
     {
+        using nlohmann::json;
+
+        g_raceMode = raceMode;
+        g_raceTime = raceTime;
+
+        g_leaderboard.push_back({
+            g_raceName,
+            g_raceMode,
+            g_raceTime,
+        });
+
+        // --- Save to JSON file ---
+        json json_output;
+        json_output["leaderboard"] = g_leaderboard; // Serialize the vector
+
+        std::ofstream o("races.json");
+        if (o.is_open()) {
+            o << json_output.dump(4); // Pretty print with 4-space indent
+            o.close();
+            std::cout << "Leaderboard saved to leaderboard.json\n";
+        } else {
+            std::cerr << "Failed to open file for writing\n";
+            return 1;
+        }
+
         std::cout << "escapeNet__finishRace is not implemented on this platform, artificially succeeding.\n";
         return 1;
     }
     
-    int escapeNet__getLeaderboard(const char *map, const char *sortBy, int offset, int limit, int ascending)
+    int escapeNet__getLeaderboard(const char *mode, const char *sortBy, int offset, int limit, int ascending)
     {
+        // Work on a copy to filter and sort, then assign back
+        g_filteredLeaderboard = g_leaderboard;
+        
+        // filter mode
+        if(mode && std::strlen(mode) > 0)
+        {
+            g_filteredLeaderboard.erase(
+                std::remove_if(
+                    g_filteredLeaderboard.begin(),
+                    g_filteredLeaderboard.end(),
+                    [mode](const LeaderboardEntry& entry) {
+                        return entry.mode != mode;
+                    }
+                ),
+                g_filteredLeaderboard.end()
+            );
+        }
+
+        // Sort based on sortBy parameter
+        if (sortBy) {
+            if (std::strcmp(sortBy, "name") == 0) {
+                std::sort(g_filteredLeaderboard.begin(), g_filteredLeaderboard.end(),
+                    [ascending](const LeaderboardEntry& a, const LeaderboardEntry& b) {
+                        return ascending ? a.name < b.name : a.name > b.name;
+                    });
+            } else if (std::strcmp(sortBy, "time") == 0) {
+                std::sort(g_filteredLeaderboard.begin(), g_filteredLeaderboard.end(),
+                    [ascending](const LeaderboardEntry& a, const LeaderboardEntry& b) {
+                        return ascending ? a.time < b.time : a.time > b.time;
+                    });
+            } else if (std::strcmp(sortBy, "mode") == 0) {
+                std::sort(g_filteredLeaderboard.begin(), g_filteredLeaderboard.end(),
+                    [ascending](const LeaderboardEntry& a, const LeaderboardEntry& b) {
+                        return ascending ? a.mode < b.mode : a.mode > b.mode;
+                    });
+            }
+        }
+
+        // Apply offset and limit
+        if (offset < 0) offset = 0;
+        if (limit < 0) limit = g_filteredLeaderboard.size();
+
+        // Ensure offset doesn't exceed vector size
+        if (offset >= static_cast<int>(g_filteredLeaderboard.size())) {
+            g_filteredLeaderboard.clear();
+            return 0;
+        }
+
+        // Calculate end iterator for slicing
+        auto start = g_filteredLeaderboard.begin() + offset;
+        auto end = (offset + limit <= static_cast<int>(g_filteredLeaderboard.size())) 
+            ? start + limit 
+            : g_filteredLeaderboard.end();
+
+        // Resize to keep only the desired range
+        g_filteredLeaderboard.erase(end, g_filteredLeaderboard.end());
+        if (start != g_filteredLeaderboard.begin()) {
+            g_filteredLeaderboard.erase(g_filteredLeaderboard.begin(), start);
+        }
+
         std::cout << "escapeNet__getLeaderboard is not implemented on this platform, artificially succeeding.\n";
         return 1;
     }
@@ -428,7 +565,7 @@ std::vector<LeaderboardEntry> EscapeNet::GetLeaderboard(const std::string& mode,
         
         std::cout << "get leaderboard successful\n";
     #else
-        std::cout << "EscapeNet::GetLeaderboard is not implemented for this platform\n";
+        leaderboard = g_filteredLeaderboard;
     #endif
     }
 
