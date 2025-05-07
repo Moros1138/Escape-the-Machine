@@ -5,6 +5,12 @@
 
 #ifdef __EMSCRIPTEN__
 
+EM_JS(void, escapeNet__incrementCounter, (const char* mode), {
+    let counterMode = UTF8ToString(mode);
+    fetch('/counters/'+counterMode, { method: 'POST', credentials: 'same-origin' })
+        .catch((err) => console.error(err));
+});
+
 EM_JS(int, escapeNet__initSession, (), {
     return Asyncify.handleSleep(function(wakeUp) {
         fetch('/session', { method: 'POST', credentials: 'same-origin' })
@@ -277,6 +283,11 @@ extern "C"
     int g_raceTime = 0;
     std::vector<LeaderboardEntry> g_leaderboard;
     std::vector<LeaderboardEntry> g_filteredLeaderboard;
+    
+    void escapeNet__incrementCounter(const char* mode)
+    {
+        std::cout "escapeNet__incrementCounter has not been implemented on this platform.\n";
+    }
 
     int escapeNet__initSession()
     { 
@@ -439,7 +450,7 @@ extern "C"
         std::cout << "escapeNet__getLeaderboard is not implemented on this platform, artificially succeeding.\n";
         return 1;
     }
-
+    
     int escapeNet__startPause()
     {
         std::cout << "escapeNet__startPause is not implemented on this platform, artificially succeeding.\n";
@@ -480,10 +491,9 @@ bool EscapeNet::StartRace(const std::string& mode)
     return (escapeNet__startRace() == 1);
 }
 
-int EscapeNet::GetCurrentRaceTime()
+bool EscapeNet::StopRace()
 {
-    std::chrono::duration<double, std::milli> duration = std::chrono::system_clock::now() - m_tp1;
-    return static_cast<int>(duration.count()) - m_pause_time;
+    return (escapeNet__stopRace() == 1);
 }
 
 std::pair<int, bool> EscapeNet::FinishRace()
@@ -503,11 +513,6 @@ bool EscapeNet::StartPause()
     return (escapeNet__startPause() == 1);
 }
 
-bool EscapeNet::StopRace()
-{
-    return (escapeNet__stopRace() == 1);
-}
-
 bool EscapeNet::EndPause()
 {
     m_pause_tp2 = std::chrono::system_clock::now();
@@ -515,6 +520,17 @@ bool EscapeNet::EndPause()
     m_pause_time += static_cast<int>(duration.count());
 
     return (escapeNet__endPause() == 1);
+}
+
+void EscapeNet::IncrementCounter(const std::string& mode)
+{
+    escapeNet__incrementCounter(mode.c_str());
+}
+
+int EscapeNet::GetCurrentRaceTime()
+{
+    std::chrono::duration<double, std::milli> duration = std::chrono::system_clock::now() - m_tp1;
+    return static_cast<int>(duration.count()) - m_pause_time;
 }
 
 std::vector<LeaderboardEntry> EscapeNet::GetLeaderboard(const std::string& mode, const int offset, const int limit, const std::string& sortBy, bool ascending)

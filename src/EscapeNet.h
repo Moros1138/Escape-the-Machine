@@ -26,13 +26,14 @@ public:
 
     bool StartRace(const std::string& mode);
     bool StopRace();
-
-    int GetCurrentRaceTime();
     std::pair<int, bool> FinishRace();
 
     bool StartPause();
     bool EndPause();
 
+    void IncrementCounter(const std::string& mode);
+
+    int GetCurrentRaceTime();
     std::vector<LeaderboardEntry> GetLeaderboard(const std::string& mode, const int offset = 0, const int limit = 100, const std::string& sortBy = "time", bool ascending = true);
 
 private:

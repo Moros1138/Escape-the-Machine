@@ -74,6 +74,7 @@ void Ending::Update()
 					mTimer = 0.0f;
 					game->Restart();
 					game->state = MAIN_MENU;
+					game->escapeNet->IncrementCounter("normal");
 				}
 			}
 			else if (game->content == ENCORE)
@@ -89,6 +90,7 @@ void Ending::Update()
 						game->state = MAIN_MENU;
 						mLpoGuy->sprSheetOffset = { 0, 0 };
 						mEncoreDialogTextID = 0;
+						game->escapeNet->IncrementCounter("encore");
 					}
 				}
 				if (game->GetKey(olc::ESCAPE).bPressed || game->GetGamePadButton(olc::GPButtons::START).bPressed)
