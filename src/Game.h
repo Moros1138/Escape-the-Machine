@@ -47,7 +47,7 @@ public:
 	GameContent content;
 	GameMode mode;
 
-	olc::GamePad* gamepad;
+	olc::GamePad* gamepad = nullptr;
 public:
 	MainMenu* mainMenu;
 	PauseMenu* pauseMenu;

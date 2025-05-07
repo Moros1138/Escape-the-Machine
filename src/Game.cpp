@@ -46,6 +46,7 @@ bool Game::OnUserCreate()
     player      = new Player(olc::vf2d(2.0f, 17.0f), olc::BLUE);
     levels      = new Level();
     sb          = new Scoreboard();
+    escapeNet   = new EscapeNet();
 
     starMap->Create();
     escapeNet->InitSession();
