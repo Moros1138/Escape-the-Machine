@@ -286,7 +286,7 @@ extern "C"
     
     void escapeNet__incrementCounter(const char* mode)
     {
-        std::cout "escapeNet__incrementCounter has not been implemented on this platform.\n";
+        std::cout << "escapeNet__incrementCounter has not been implemented on this platform.\n";
     }
 
     int escapeNet__initSession()
