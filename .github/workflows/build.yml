@@ -90,7 +90,7 @@ jobs:
       
       - name: Build
         run: |
-          cmake . -B build
+          cmake -DHAS_TERMINAL=OFF . -B build 
           cmake --build build --config=Release
         shell: pwsh
 
