@@ -2,7 +2,7 @@
 
 int main()
 {
-#if !defined(__EMSCRIPTEN__) && !defined(__linux__)
+#if defined(OLC_PLATFORM_WINAPI)
 	#ifdef _DEBUG
 		ShowWindow(GetConsoleWindow(), SW_SHOW);
 	#else
