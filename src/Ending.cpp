@@ -74,7 +74,12 @@ void Ending::Update()
 					mTimer = 0.0f;
 					game->Restart();
 					game->state = MAIN_MENU;
-					game->escapeNet->IncrementCounter("normal");
+					
+					if(game->mode == MAIN)
+						game->escapeNet->IncrementCounter("normal-main");
+					
+					if(game->mode == SURVIVAL)
+						game->escapeNet->IncrementCounter("normal-survival");
 				}
 			}
 			else if (game->content == ENCORE)
@@ -90,7 +95,13 @@ void Ending::Update()
 						game->state = MAIN_MENU;
 						mLpoGuy->sprSheetOffset = { 0, 0 };
 						mEncoreDialogTextID = 0;
-						game->escapeNet->IncrementCounter("encore");
+
+						if(game->mode == MAIN)
+							game->escapeNet->IncrementCounter("encore-main");
+						
+						if(game->mode == SURVIVAL)
+							game->escapeNet->IncrementCounter("encore-survival");
+
 					}
 				}
 				if (game->GetKey(olc::ESCAPE).bPressed || game->GetGamePadButton(olc::GPButtons::START).bPressed)
