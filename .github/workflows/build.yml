@@ -127,6 +127,10 @@ jobs:
           name: Escape-the-Machine.Windows
           path: artifacts/
       
+      - name: Confirm Files
+        id: list-files
+        run: ls -Al artifacts
+
       - name: Get commit SHA
         id: commit
         run: echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
