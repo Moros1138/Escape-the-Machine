@@ -7,13 +7,13 @@
 
 EM_JS(void, escapeNet__incrementCounter, (const char* mode), {
     let counterMode = UTF8ToString(mode);
-    fetch('/counters/'+counterMode, { method: 'POST', credentials: 'same-origin' })
+    fetch('/api/counters/'+counterMode, { method: 'POST', credentials: 'same-origin' })
         .catch((err) => console.error(err));
 });
 
 EM_JS(int, escapeNet__initSession, (), {
     return Asyncify.handleSleep(function(wakeUp) {
-        fetch('/session', { method: 'POST', credentials: 'same-origin' })
+        fetch('/api/session', { method: 'POST', credentials: 'same-origin' })
             .then((response) =>
             {
                 return response.ok
@@ -39,7 +39,7 @@ EM_JS(int, escapeNet__setRacerName, (const char* str), {
     let racerName = UTF8ToString(str);
     
     return Asyncify.handleSleep(function(wakeUp) {
-        fetch('/name', {
+        fetch('/api/name', {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -68,7 +68,7 @@ EM_JS(int, escapeNet__setRacerName, (const char* str), {
 EM_JS(int, escapeNet__startRace, (), {
     
     return Asyncify.handleSleep(function(wakeUp) {
-        fetch('/race', {
+        fetch('/api/race', {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -104,7 +104,7 @@ EM_JS(int, escapeNet__stopRace, (), {
     }
 
     return Asyncify.handleSleep(function(wakeUp) {
-        fetch('/race', {
+        fetch('/api/race', {
             method: 'DELETE',
             credentials: 'same-origin',
             headers: {
@@ -146,7 +146,7 @@ EM_JS(int, escapeNet__finishRace, (const char* raceMode, int raceTime), {
     };
     
     return Asyncify.handleSleep(function(wakeUp) {
-        fetch('/race', {
+        fetch('/api/race', {
             method: 'PATCH',
             credentials: 'same-origin',
             headers: {
@@ -176,7 +176,7 @@ EM_JS(int, escapeNet__startPause, (), {
     
 
     return Asyncify.handleSleep(function(wakeUp) {
-        fetch('/pause', {
+        fetch('/api/pause', {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -205,7 +205,7 @@ EM_JS(int, escapeNet__startPause, (), {
 EM_JS(int, escapeNet__endPause, (), {
     
     return Asyncify.handleSleep(function(wakeUp) {
-        fetch('/pause', {
+        fetch('/api/pause', {
             method: 'PATCH',
             credentials: 'same-origin',
             headers: {
@@ -248,7 +248,7 @@ EM_JS(int, escapeNet__getLeaderboard, (const char* mode, const char* sortBy, con
             params.sortBy = UTF8ToString(sortBy);
         }
 
-        fetch(`/race?mode=${params.mode}&sortBy=${params.sortBy}&sort=${params.sort}&offset=${params.offset}&limit=${params.limit}`, {
+        fetch(`/api/race?mode=${params.mode}&sortBy=${params.sortBy}&sort=${params.sort}&offset=${params.offset}&limit=${params.limit}`, {
             method: 'GET',
             credentials: 'same-origin',
         }).then((response) =>
