@@ -127,6 +127,11 @@ jobs:
           name: Escape-the-Machine.Windows
           path: artifacts/Escape-the-Machine.Windows
       
+      - name: Zip Artifacts
+        run: |
+          (cd artifacts/Escape-the-Machine.Web; zip * ../Escape-the-Machine.Web.zip)
+          (cd artifacts/Escape-the-Machine.Ubuntu; zip * ../Escape-the-Machine.Ubuntu.zip)
+          (cd artifacts/Escape-the-Machine.Windows; zip * ../Escape-the-Machine.Windows.zip)
       - name: Confirm Files
         id: list-files
         run: ls -Al artifacts
@@ -152,6 +157,6 @@ jobs:
             --draft=false \
             --prerelease=false \
             --target ${{ github.sha }} \
-            artifacts/Escape-the-Machine.Ubuntu \
-            artifacts/Escape-the-Machine.Web \
-            artifacts/Escape-the-Machine.Windows
+            artifacts/Escape-the-Machine.Ubuntu.zip \
+            artifacts/Escape-the-Machine.Web.zip \
+            artifacts/Escape-the-Machine.Windows.zip
