@@ -248,11 +248,17 @@ bool Game::IsGamePadReady()
     
     // try to acquire a gamepad
     if (gamepad == nullptr)
-        if (gamepad = olc::GamePad::selectWithAnyButton()) { } else { return false; }
+    {
+        if (!(gamepad = olc::GamePad::selectWithAnyButton()))
+            return false;
+    }
     
     // if we're here, we have a gamepad, but it might have disconnected
     if (!gamepad->stillConnected)
-        if (gamepad = olc::GamePad::selectWithAnyButton()) { } else { return false; }
+    {
+        if (!(gamepad = olc::GamePad::selectWithAnyButton()))
+            return false;
+    }
             
     // if we're here, we definitely have a gamepad that is connected
     return true;
