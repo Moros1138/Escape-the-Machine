@@ -113,19 +113,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: Escape-the-Machine.Web
-          path: artifacts/
+          path: artifacts/Escape-the-Machine.Web
 
       - name: Download Ubuntu Artifact
         uses: actions/download-artifact@v4
         with:
           name: Escape-the-Machine.Ubuntu
-          path: artifacts/
+          path: artifacts/Escape-the-Machine.Ubuntu
 
       - name: Download Windows Artifact
         uses: actions/download-artifact@v4
         with:
           name: Escape-the-Machine.Windows
-          path: artifacts/
+          path: artifacts/Escape-the-Machine.Windows
       
       - name: Confirm Files
         id: list-files
