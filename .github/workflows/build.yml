@@ -129,9 +129,9 @@ jobs:
       
       - name: Zip Artifacts
         run: |
-          (cd artifacts/Escape-the-Machine.Web; zip * ../Escape-the-Machine.Web.zip)
-          (cd artifacts/Escape-the-Machine.Ubuntu; zip * ../Escape-the-Machine.Ubuntu.zip)
-          (cd artifacts/Escape-the-Machine.Windows; zip * ../Escape-the-Machine.Windows.zip)
+          (cd artifacts/Escape-the-Machine.Web; zip -r ../Escape-the-Machine.Web.zip .)
+          (cd artifacts/Escape-the-Machine.Ubuntu; zip -r ../Escape-the-Machine.Ubuntu.zip .)
+          (cd artifacts/Escape-the-Machine.Windows; zip -r ../Escape-the-Machine.Windows.zip .)
       - name: Confirm Files
         id: list-files
         run: ls -Al artifacts
