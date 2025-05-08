@@ -148,6 +148,6 @@ jobs:
             --draft=false \
             --prerelease=false \
             --target ${{ github.sha }} \
-            artifacts/Escape-the-Machine.Ubuntu.zip \
-            artifacts/Escape-the-Machine.Web.zip \
-            artifacts/Escape-the-Machine.Windows.zip
+            artifacts/Escape-the-Machine.Ubuntu \
+            artifacts/Escape-the-Machine.Web \
+            artifacts/Escape-the-Machine.Windows
