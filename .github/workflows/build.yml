@@ -99,4 +99,55 @@ jobs:
         with:
           name: Escape-the-Machine.Windows
           path: build/bin/*
+  release:
+    name: Release
+    needs: [emscripten, ubuntu, windows]  
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
       
+      - name: Download Emscripten Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Escape-the-Machine.Web
+          path: artifacts/
+
+      - name: Download Ubuntu Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Escape-the-Machine.Ubuntu
+          path: artifacts/
+
+      - name: Download Windows Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Escape-the-Machine.Windows
+          path: artifacts/
+      
+      - name: Get commit SHA
+        id: commit
+        run: echo "COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
+      
+      - name: Delete existing latest release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete latest --yes || true
+        continue-on-error: true
+
+      - name: Create or Update Latest Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create latest \
+            --title "Latest Release" \
+            --notes "Latest release with artifacts from commit ${{ env.COMMIT_SHA }}." \
+            --draft=false \
+            --prerelease=false \
+            --target ${{ github.sha }} \
+            artifacts/Escape-the-Machine.Ubuntu.zip \
+            artifacts/Escape-the-Machine.Web.zip \
+            artifacts/Escape-the-Machine.Windows.zip
